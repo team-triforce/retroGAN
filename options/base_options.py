@@ -104,7 +104,7 @@ class BaseOptions():
                             help='if specified, clamp input images to console palette')
         parser.add_argument('--tf_negate', action='store_true',
                             help='if specified, negate image palette')
-        parser.add_argument('--tf_seed', type=int, default='0', help='seed for triforce functionality')
+
         parser.add_argument('--tf_size_augment', type=str, default='none',
                             help='[none | '
                                  'double_and_crop | '
