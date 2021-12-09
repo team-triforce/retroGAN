@@ -19,13 +19,21 @@ See training and test tips at: https://github.com/junyanz/pytorch-CycleGAN-and-p
 See frequently asked questions at: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/master/docs/qa.md
 """
 import time
+
+from numpy import rad2deg
 from options.train_options import TrainOptions
 from data import create_dataset
 from models import create_model
 from util.visualizer import Visualizer
+from util import evaluation_metrics, random_search
+import os
+from os.path import join, isdir
+from PIL import Image
 
-if __name__ == '__main__':
-    opt = TrainOptions().parse()   # get training options
+CHECKPOINT_BASE_PATH = r'./checkpoints/triforce/web/images'
+
+
+def main(opt):
     dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
     dataset_size = len(dataset)    # get the number of images in the dataset.
     print('The number of training images = %d' % dataset_size)
@@ -75,3 +83,72 @@ if __name__ == '__main__':
             model.save_networks(epoch)
 
         print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
+    
+    if opt.random_search:
+        return compute_metrics()
+
+def compute_metrics():
+    # get all generated images
+    filtered_images = filter(lambda filename: "fake" in filename, os.listdir(CHECKPOINT_BASE_PATH))
+    nes_color_ratio = 0
+    snes_color_ratio = 0
+    # get images from last epoch
+    sorted_images = sorted(filtered_images)[-2:]
+    for filename in sorted_images:
+        img = Image.open(join(CHECKPOINT_BASE_PATH, filename))
+        # for now assume fake_A is nes and fake_B is snes
+        if "A" in filename:
+            nes_color_ratio = evaluation_metrics.compute_nes_color_ratio(img)
+        else:
+            snes_color_ratio = evaluation_metrics.compute_snes_color_ratio(img)
+    print(f'Ratio of correct NES colors: {nes_color_ratio}')
+    print(f'Ratio of correct SNES colors: {snes_color_ratio}')
+    return nes_color_ratio, snes_color_ratio 
+
+def clear_checkpoint_images():
+    # clear checkpoints images folder
+    if(isdir(CHECKPOINT_BASE_PATH)):
+        for filename in os.listdir(CHECKPOINT_BASE_PATH):
+            os.remove(join(CHECKPOINT_BASE_PATH, filename))
+            
+    
+
+def run_random_search(opt):
+    best_nes_opt = None
+    best_nes_metric = None
+    best_snes_opt = None
+    best_snes_metric = None
+
+    
+    # create random sets of opts, and train over each one, retaining the best
+    random_opts = random_search.get_radomized_opts(opt)
+    for random_opt in random_opts:
+        clear_checkpoint_images()
+        candidate_nes_metric, candidate_snes_metric = main(random_opt)
+        if best_nes_metric is None or candidate_nes_metric > best_nes_metric:
+            best_nes_metric = candidate_nes_metric
+            best_nes_opt = opt
+        
+        if best_snes_metric is None or candidate_snes_metric > best_snes_metric:
+            best_snes_metric = candidate_snes_metric
+            best_snes_opt = opt
+
+    print(f'Best NES metric score: {best_nes_metric}')
+    print('Best opt:')
+    best_nes_opt = best_nes_opt.__dict__
+    for o in best_nes_opt:
+        print(f'{o}: {best_nes_opt[o]}')
+
+    print(f'Best SNES metric score: {best_snes_metric}')
+    print('Best opt:')
+    best_snes_opt = best_snes_opt.__dict__
+    for o in best_snes_opt:
+        print(f'{o}: {best_snes_opt[o]}')
+
+
+if __name__ == '__main__':
+    opt = TrainOptions().parse()   # get training options
+    if opt.random_search:
+        run_random_search(opt)
+    else:
+        main(opt)

@@ -114,6 +114,9 @@ class BaseOptions():
         parser.add_argument('--tf_enlarge', action='store_true',
                             help='if specified, enlarge image x2 using nearest neighbor '
                                  '(saves to disk back to normal size - TODO)')
+        parser.add_argument('--random_search', action='store_true', help='if specified, use random hyperparameter search')
+        parser.add_argument('--random_lr_policy', action='store_true', help='random training policy from [linear | step | plateau | cosine]')
+        parser.add_argument('--max_random_permuations', type=int, default=3, help='max number of random option sets to test against')
         self.initialized = True
         return parser
 

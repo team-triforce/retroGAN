@@ -161,4 +161,4 @@ def get_nes_color_palette():
             (160, 162, 160)]
 
 def get_snes_color_palette():
-    return get_nes_color_palette & 0xF8
+    return np.array(get_nes_color_palette()) & 0xF8
