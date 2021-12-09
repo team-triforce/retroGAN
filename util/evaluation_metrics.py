@@ -3,6 +3,7 @@ from util import util
 import functools
 import numpy as np
 
+
 def get_color_count(img, color_palette):
     """ Returns the number of colors found in the color palette
 
@@ -16,7 +17,7 @@ def get_color_count(img, color_palette):
     """
     w, h = img.size
     # get all unique colors in image and their count 
-    colors = img.getcolors(w*h, maxcolors=w*h)
+    colors = img.getcolors(w * h, maxcolors=w * h)
 
     # count how many of the colors are in the nes palette
     return colors, functools.reduce(lambda x, y: (x + (1 if y[1] in color_palette else 0)), colors, 0)
