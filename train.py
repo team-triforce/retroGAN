@@ -125,6 +125,8 @@ def run_random_search(opt):
     # create random sets of opts, and train over each one, retaining the best
     random_opts = random_search.get_randomized_opts(opt)
     for random_opt in random_opts:
+        print('Running RANDOM SEARCH with:')
+        print(random_opt)
         clear_checkpoint_images()
         candidate_nes_metric, candidate_snes_metric = main(random_opt)
         if best_nes_metric is None or candidate_nes_metric > best_nes_metric:
