@@ -102,6 +102,7 @@ def mkdir(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
+
 def get_nes_color_palette():
     return [(84, 84, 84),
             (0, 30, 116),
@@ -160,5 +161,3 @@ def get_nes_color_palette():
             (160, 214, 228),
             (160, 162, 160)]
 
-def get_snes_color_palette():
-    return np.array(get_nes_color_palette()) & 0xF8

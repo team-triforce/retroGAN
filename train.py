@@ -27,28 +27,29 @@ from models import create_model
 from util.visualizer import Visualizer
 from util import evaluation_metrics, random_search
 import os
-from os.path import join, isdir
+from os.path import join, isdir, exists
 from PIL import Image
 
-CHECKPOINT_BASE_PATH = r'./checkpoints/triforce/web/images'
+# CHECKPOINT_BASE_PATH = r'./checkpoints/triforce/web/images'
 
 
 def main(opt):
     dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
-    dataset_size = len(dataset)    # get the number of images in the dataset.
+    dataset_size = len(dataset)  # get the number of images in the dataset.
     print('The number of training images = %d' % dataset_size)
 
-    model = create_model(opt)      # create a model given opt.model and other options
-    model.setup(opt)               # regular setup: load and print networks; create schedulers
-    visualizer = Visualizer(opt)   # create a visualizer that display/save images and plots
-    total_iters = 0                # the total number of training iterations
+    model = create_model(opt)  # create a model given opt.model and other options
+    model.setup(opt)  # regular setup: load and print networks; create schedulers
+    visualizer = Visualizer(opt)  # create a visualizer that display/save images and plots
+    total_iters = 0  # the total number of training iterations
 
-    for epoch in range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1):    # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
+    for epoch in range(opt.epoch_count,
+                       opt.n_epochs + opt.n_epochs_decay + 1):  # outer loop for different epochs; we save the model by <epoch_count>, <epoch_count>+<save_latest_freq>
         epoch_start_time = time.time()  # timer for entire epoch
-        iter_data_time = time.time()    # timer for data loading per iteration
-        epoch_iter = 0                  # the number of training iterations in current epoch, reset to 0 every epoch
-        visualizer.reset()              # reset the visualizer: make sure it saves the results to HTML at least once every epoch
-        model.update_learning_rate()    # update learning rates in the beginning of every epoch.
+        iter_data_time = time.time()  # timer for data loading per iteration
+        epoch_iter = 0  # the number of training iterations in current epoch, reset to 0 every epoch
+        visualizer.reset()  # reset the visualizer: make sure it saves the results to HTML at least once every epoch
+        model.update_learning_rate()  # update learning rates in the beginning of every epoch.
         for i, data in enumerate(dataset):  # inner loop within one epoch
             iter_start_time = time.time()  # timer for computation per iteration
             if total_iters % opt.print_freq == 0:
@@ -56,36 +57,38 @@ def main(opt):
 
             total_iters += opt.batch_size
             epoch_iter += opt.batch_size
-            model.set_input(data)         # unpack data from dataset and apply preprocessing
-            model.optimize_parameters()   # calculate loss functions, get gradients, update network weights
+            model.set_input(data)  # unpack data from dataset and apply preprocessing
+            model.optimize_parameters()  # calculate loss functions, get gradients, update network weights
 
-            if total_iters % opt.display_freq == 0:   # display images on visdom and save images to a HTML file
+            if total_iters % opt.display_freq == 0:  # display images on visdom and save images to a HTML file
                 save_result = total_iters % opt.update_html_freq == 0
                 model.compute_visuals()
                 visualizer.display_current_results(model.get_current_visuals(), epoch, save_result)
 
-            if total_iters % opt.print_freq == 0:    # print training losses and save logging information to the disk
+            if total_iters % opt.print_freq == 0:  # print training losses and save logging information to the disk
                 losses = model.get_current_losses()
                 t_comp = (time.time() - iter_start_time) / opt.batch_size
                 visualizer.print_current_losses(epoch, epoch_iter, losses, t_comp, t_data)
                 if opt.display_id > 0:
                     visualizer.plot_current_losses(epoch, float(epoch_iter) / dataset_size, losses)
 
-            if total_iters % opt.save_latest_freq == 0:   # cache our latest model every <save_latest_freq> iterations
+            if total_iters % opt.save_latest_freq == 0:  # cache our latest model every <save_latest_freq> iterations
                 print('saving the latest model (epoch %d, total_iters %d)' % (epoch, total_iters))
                 save_suffix = 'iter_%d' % total_iters if opt.save_by_iter else 'latest'
                 model.save_networks(save_suffix)
 
             iter_data_time = time.time()
-        if epoch % opt.save_epoch_freq == 0:              # cache our model every <save_epoch_freq> epochs
+        if epoch % opt.save_epoch_freq == 0:  # cache our model every <save_epoch_freq> epochs
             print('saving the model at the end of epoch %d, iters %d' % (epoch, total_iters))
             model.save_networks('latest')
             model.save_networks(epoch)
 
-        print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
-    
+        print('End of epoch %d / %d \t Time Taken: %d sec' % (
+        epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
+
     if opt.random_search:
         return compute_metrics()
+
 
 def compute_metrics():
     # get all generated images
@@ -103,15 +106,15 @@ def compute_metrics():
             snes_color_ratio = evaluation_metrics.compute_snes_color_ratio(img)
     print(f'Ratio of correct NES colors: {nes_color_ratio}')
     print(f'Ratio of correct SNES colors: {snes_color_ratio}')
-    return nes_color_ratio, snes_color_ratio 
+    return nes_color_ratio, snes_color_ratio
+
 
 def clear_checkpoint_images():
     # clear checkpoints images folder
-    if(isdir(CHECKPOINT_BASE_PATH)):
+    if isdir(CHECKPOINT_BASE_PATH):
         for filename in os.listdir(CHECKPOINT_BASE_PATH):
             os.remove(join(CHECKPOINT_BASE_PATH, filename))
-            
-    
+
 
 def run_random_search(opt):
     best_nes_opt = None
@@ -119,16 +122,15 @@ def run_random_search(opt):
     best_snes_opt = None
     best_snes_metric = None
 
-    
     # create random sets of opts, and train over each one, retaining the best
-    random_opts = random_search.get_radomized_opts(opt)
+    random_opts = random_search.get_randomized_opts(opt)
     for random_opt in random_opts:
         clear_checkpoint_images()
         candidate_nes_metric, candidate_snes_metric = main(random_opt)
         if best_nes_metric is None or candidate_nes_metric > best_nes_metric:
             best_nes_metric = candidate_nes_metric
             best_nes_opt = opt
-        
+
         if best_snes_metric is None or candidate_snes_metric > best_snes_metric:
             best_snes_metric = candidate_snes_metric
             best_snes_opt = opt
@@ -147,8 +149,11 @@ def run_random_search(opt):
 
 
 if __name__ == '__main__':
-    opt = TrainOptions().parse()   # get training options
-    if opt.random_search:
-        run_random_search(opt)
+    options = TrainOptions().parse()  # get training options
+
+    CHECKPOINT_BASE_PATH = f'{options.checkpoints_dir}/{options.name}/web/images'
+
+    if exists(options.random_search):
+        run_random_search(options)
     else:
-        main(opt)
+        main(options)

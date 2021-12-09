@@ -36,5 +36,9 @@ class TrainOptions(BaseOptions):
         parser.add_argument('--lr_policy', type=str, default='linear', help='learning rate policy. [linear | step | plateau | cosine]')
         parser.add_argument('--lr_decay_iters', type=int, default=50, help='multiply by a gamma every lr_decay_iters iterations')
 
+        parser.add_argument('--random_search', default='', type=str, help='json file containing opt parameter ranges to vary')
+        parser.add_argument('--max_random_permutations', type=int, default=3, help='max number of random option sets to test against')
+
+
         self.isTrain = True
         return parser
