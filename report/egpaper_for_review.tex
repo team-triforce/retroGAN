@@ -14,6 +14,7 @@
 % run, let it finish, and you should be clear).
 \usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
 
+% TODO: Uncomment this line to enable the RULER, which I think we need for the final submission? Verify this.
 \cvprfinalcopy % *** Uncomment this line for the final submission
 
 \def\cvprPaperID{****} % *** Enter the CVPR Paper ID here
@@ -27,9 +28,9 @@
 \title{RetroGAN: Translating Unpaired Video Game Images Using CycleGANs}
 
 \author{Andrew Rollings, Michael Townsend, Tyler Thurston\\
-Georgia Institute of Technology\\
-% NOTE: Do we include email?
-%{\tt\small andrew\_email@gatech.edu, michael\_email@gatech.edu, tthurston7@gatech.edu}
+   Georgia Institute of Technology\\
+   % NOTE: Do we include email?
+   %{\tt\small andrew\_email@gatech.edu, michael\_email@gatech.edu, tthurston7@gatech.edu}
 }
 % For a paper whose authors are all at the same institution,
 % omit the following lines up until the closing ``}''.
@@ -47,58 +48,74 @@ Georgia Institute of Technology\\
 
 %%%%%%%%% BODY TEXT
 \section{Introduction/Background/Motivation}
+\textbf{(5 points) What did you try to do? What problem did you try to solve? Articulate your objectives using absolutely no jargon.}
+We tried to create a network for converting screenshots from the NES console to the SNES console and vise-versa. The main problems is that the various consoles have various limitations that define how they look, things like limited color palettes, sprite pixel limit, ability to have transparency or gradients or not.
 
-(5 points) What did you try to do? What problem did you try to solve? Articulate your objectives using absolutely no jargon. 
+\textbf{(5 points) How is it done today, and what are the limits of current practice?}
+There is limited current research on this particular domain, as it is limited by lack of proper datasets and the lack of paired data between console generations.
 
-(5 points) How is it done today, and what are the limits of current practice?
+\textbf{(5 points) Who cares? If you are successful, what difference will it make?}
+If success, this can allow the content of a game of a particular video game console to be translated into the style of another's. Pixel artists are a very high demand job and creating high quality pixel art is one of the largest financial strains that can be put on games. Pixel artists are often so hard to find that games will save money by switching to 3D modelling as there are many more artists with more tools to assist with them. This could allow for pixel artists to become more more efficient and could allow taking images from a previous game or generation, and translating it to the current project's generation. For instance, if you had worked previously on a NES game and were making its sequel for the SNES, this could allow someone to take the images of their original game and create new baseline screenshots to allow the pixel artist to only have to tweak the translation instead of starting from scratch. This is also not constrained to translation between NES and SNES, and could be done on other consoles and generations given the proper datasets.
 
-(5 points) Who cares? If you are successful, what difference will it make? 
+\textbf{(5 points) What data did you use? Provide details about your data, specifically choose the most important aspects of your data mentioned \href{https://arxiv.org/abs/1803.09010}{here}. You don’t have to choose all of them, just the most}relevant.
+A dataset for NES/SNES images doesn't exist in a proper form, so we created our own from various screenshot databases. We implemented our own pre-processing, which included unsupervised color clustering to remove PNG artifacts, and clamping colors to more closely adhere to the console's original color palette from other image color manipulation. (Andrew can easily improve this, we should probably also talk about the motivation, and recommended use from that link maybe)
 
-(5 points) What data did you use? Provide details about your data, specifically choose the most important aspects of your data mentioned \href{https://arxiv.org/abs/1803.09010}{here}. You don’t have to choose all of them, just the most relevant.
 %-------------------------------------------------------------------------
 %------------------------------------------------------------------------
 \section{Approach}
 
-(10 points) What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach? 
+\textbf{(10 points) What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?}
+We wanted to try translation between video game consoles images of different generations, the issue is that it isn't realistic to have paired data of this since each generation of console will consist almost solely of different games(with a small exception of remakes). We thought CycleGAN would be a good option for success as it doesn't require paired data and is also able to take flexible image sizes, which is a great quality as we added our own custom datasets. We initially started by taking the driver code for the original CycleGAN paper \cite{CycleGAN}. We then removed all of the code related to pix2pix and added our own datasets, pre-processing, augmentation, hyper-parameter tuning code, and metrics. Our approach is using the existing CycleGAN architecture, however our dataset is unique and to our knowledge, no one has properly explored this type of translation in this architecture.
 
-(5 points) What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work? 
+\textbf{(5 points) What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?}
+We anticipated plenty of issues. While the main difference between the NES and SNES is their available color palettes, the NES also has several other restrictions such a pixel limits and more limited color palettes per sprite. This was anticipated to be very difficult to generalize without magnitudes more data. We didn't see great results in our first attempt, however after doing some fairly basic pre-processing to remove artifacts from our images, we started seeing interesting results with convincing translations very early on.
 
-\textbf{Important: Mention any code repositories (with citations) or other sources that you used, and specifically what changes you made to them for your project. }
+\textbf{Important: Mention any code repositories (with citations) or other sources that you used, and specifically what changes you made to them for your project.}
 
 \section{Experiments and Results}
 
-(10 points) How did you measure success? What experiments were used? What were the results, both quantitative and qualitative? Did you succeed? Did you fail? Why? Justify your reasons with arguments supported by evidence and data.
+\textbf{(10 points) How did you measure success? What experiments were used? What were the results, both quantitative and qualitative? Did you succeed? Did you fail? Why? Justify your reasons with arguments supported by evidence and data.}
+Should probably save this entire section for after we've established our final metrics and have screenshots to show.
 
 \textbf{Important: This section should be rigorous and thorough. Present detailed information about decision you made, why you made them, and any evidence/experimentation to back them up. This is especially true if you leveraged existing architectures, pre-trained models, and code (i.e. do not just show results of fine-tuning a pre-trained model without any analysis, claims/evidence, and conclusions, as that tends to not make a strong project). }
 
 %-------------------------------------------------------------------------
 \section{Other Sections}
 
-You are welcome to introduce additional sections or subsections, if required, to address the following questions in detail. 
+You are welcome to introduce additional sections or subsections, if required, to address the following questions in detail.
 
-(5 points) Appropriate use of figures / tables / visualizations. Are the ideas presented with appropriate illustration? Are the results presented clearly; are the important differences illustrated? 
+\textbf{(5 points) Appropriate use of figures / tables / visualizations. Are the ideas presented with appropriate illustration? Are the results presented clearly; are the important differences illustrated?}
+This seems like free points, just properly caption tables and figures. We just need to make sure when we're showing before-after images to make sure we show the metric improving and talk about it in analysis.
 
-(5 points) Overall clarity. Is the manuscript self-contained? Can a peer who has also taken Deep Learning understand all of the points addressed above? Is sufficient detail provided? 
+\textbf{(5 points) Overall clarity. Is the manuscript self-contained? Can a peer who has also taken Deep Learning understand all of the points addressed above? Is sufficient detail provided?}
+This seems like free points. We probably just need to briefly tough on GANs and give a proper section on how CycleGANs work, as well as some detail between NES and SNES color palettes.
 
-(5 points) Finally, points will be distributed based on your understanding of how your project relates to Deep Learning. Here are some questions to think about: 
+\textbf{(5 points) Finally, points will be distributed based on your understanding of how your project relates to Deep Learning. Here are some questions to think about:}
+This also seems free. We should probably go into the architecture of each GAN just so we can estimate how many parameters we have. (should probably wait until final HPs are done)
 
-What was the structure of your problem? How did the structure of your model reflect the structure of your problem? 
+\textbf{What was the structure of your problem? How did the structure of your model reflect the structure of your problem?}
 
-What parts of your model had learned parameters (e.g., convolution layers) and what parts did not (e.g., post-processing classifier probabilities into decisions)? 
+\textbf{What parts of your model had learned parameters (e.g., convolution layers) and what parts did not (e.g., post-processing classifier probabilities into decisions)?}
+Should definitely cover this, at least briefly.
 
-What representations of input and output did the neural network expect? How was the data pre/post-processed?
-What was the loss function? 
+\textbf{What representations of input and output did the neural network expect? How was the data pre/post-processed?
+   What was the loss function?}
+This is Andrew's section. Should talk about the pre-processing we did.
 
-Did the model overfit? How well did the approach generalize? 
+\textbf{Did the model overfit? How well did the approach generalize?}
+This is probably a good way to talk about our augmentation and how it helps with over-fitting.
 
-What hyperparameters did the model have? How were they chosen? How did they affect performance? What optimizer was used? 
+\textbf{What hyperparameters did the model have? How were they chosen? How did they affect performance? What optimizer was used?}
+Probably should only talk about the major ones we used (dataset size, LR, the GAN types, whatever)
 
-What Deep Learning framework did you use? 
+\textbf{What Deep Learning framework did you use?}
+GANs? I guess we should probably just talk about GANs+CycleGAN and it'll cover us on this.
 
-What existing code or models did you start with and what did those starting points provide? 
+\textbf{What existing code or models did you start with and what did those starting points provide?}
+This is already kind of mentioned in the intro where I cite it, but we can add more if we want.
 
-Briefly discuss potential future work that the research community could focus on to make improvements in the direction of your project's topic.
-
+\textbf{Briefly discuss potential future work that the research community could focus on to make improvements in the direction of your project's topic.}
+This is an interesting one, we could talk about using sprites, more data, other consoles, using the metrics we made with loss, all sorts of stuff.
 
 %-------------------------------------------------------------------------
 
@@ -175,7 +192,7 @@ algorithm on a lunar lander [name of lander removed for blind review]''.
 That would be silly, and would immediately identify the authors. Instead
 write the following:
 \begin{quotation}
-\noindent
+   \noindent
    We describe a system for zero-g frobnication.  This
    system is new because it handles the following cases:
    A, B.  Previous systems [Zeus et al. 1968] didn't
@@ -205,15 +222,15 @@ FAQ\medskip\\
 {\bf A:} To conform with the double blind review policy, you can report results of other challenge participants together with your results in your paper. For your results, however, you should not identify yourself and should not mention your participation in the challenge. Instead present your results referring to the method proposed in your paper and draw conclusions based on the experimental comparison to other results.\medskip\\
 
 \begin{figure}[t]
-\begin{center}
-\fbox{\rule{0pt}{2in} \rule{0.9\linewidth}{0pt}}
-   %\includegraphics[width=0.8\linewidth]{egfigure.eps}
-\end{center}
+   \begin{center}
+      \fbox{\rule{0pt}{2in} \rule{0.9\linewidth}{0pt}}
+      %\includegraphics[width=0.8\linewidth]{egfigure.eps}
+   \end{center}
    \caption{Example of caption.  It is set in Roman so that mathematics
-   (always set in Roman: $B \sin A = A \sin B$) may be included without an
-   ugly clash.}
-\label{fig:long}
-\label{fig:onecol}
+      (always set in Roman: $B \sin A = A \sin B$) may be included without an
+      ugly clash.}
+   \label{fig:long}
+   \label{fig:onecol}
 \end{figure}
 
 \subsection{Miscellaneous}
@@ -221,8 +238,8 @@ FAQ\medskip\\
 \noindent
 Compare the following:\\
 \begin{tabular}{ll}
- \verb'$conf_a$' &  $conf_a$ \\
- \verb'$\mathit{conf}_a$' & $\mathit{conf}_a$
+   \verb'$conf_a$' & $conf_a$          \\
+   \verb'$\mathit{conf}_a$' & $\mathit{conf}_a$
 \end{tabular}\\
 See The \TeX book, p165.
 
@@ -234,9 +251,9 @@ When citing a multi-author paper, you may save space by using ``et alia'',
 shortened to ``\etal'' (not ``{\em et.\ al.}'' as ``{\em et}'' is a complete word.)
 However, use it only when there are three or more authors.  Thus, the
 following is correct: ``
-   Frobnication has been trendy lately.
-   It was introduced by Alpher~\cite{Alpher02}, and subsequently developed by
-   Alpher and Fotheringham-Smythe~\cite{Alpher03}, and Alpher \etal~\cite{Alpher04}.''
+Frobnication has been trendy lately.
+It was introduced by Alpher~\cite{Alpher02}, and subsequently developed by
+Alpher and Fotheringham-Smythe~\cite{Alpher03}, and Alpher \etal~\cite{Alpher04}.''
 
 This is incorrect: ``... subsequently developed by Alpher \etal~\cite{Alpher03} ...''
 because reference~\cite{Alpher03} has just two authors.  If you use the
@@ -249,11 +266,11 @@ chronological) order, so prefer \cite{Alpher03,Alpher02,Authors14} to
 
 
 \begin{figure*}
-\begin{center}
-\fbox{\rule{0pt}{2in} \rule{.9\linewidth}{0pt}}
-\end{center}
+   \begin{center}
+      \fbox{\rule{0pt}{2in} \rule{.9\linewidth}{0pt}}
+   \end{center}
    \caption{Example of a short caption, which should be centered.}
-\label{fig:short}
+   \label{fig:short}
 \end{figure*}
 
 %------------------------------------------------------------------------
@@ -327,7 +344,7 @@ and your text on the same line.
 \subsection{Footnotes}
 
 Please use footnotes\footnote {This is what a footnote looks like.  It
-often distracts the reader from the main flow of the argument.} sparingly.
+   often distracts the reader from the main flow of the argument.} sparingly.
 Indeed, try to avoid footnotes altogether and include necessary peripheral
 observations in
 the text (within parentheses, if you prefer, as in this sentence).  If you
@@ -345,18 +362,18 @@ example~\cite{Authors14}.  Where appropriate, include the name(s) of
 editors of referenced books.
 
 \begin{table}
-\begin{center}
-\begin{tabular}{|l|c|}
-\hline
-Method & Frobnability \\
-\hline\hline
-Theirs & Frumpy \\
-Yours & Frobbly \\
-Ours & Makes one's heart Frob\\
-\hline
-\end{tabular}
-\end{center}
-\caption{Results.   Ours is better.}
+   \begin{center}
+      \begin{tabular}{|l|c|}
+         \hline
+         Method & Frobnability           \\
+         \hline\hline
+         Theirs & Frumpy                 \\
+         Yours  & Frobbly                \\
+         Ours   & Makes one's heart Frob \\
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{Results.   Ours is better.}
 \end{table}
 
 %-------------------------------------------------------------------------
@@ -373,12 +390,12 @@ zoom in to see tiny details on a graphic.
 When placing figures in \LaTeX, it's almost always best to use
 \verb+\includegraphics+, and to specify the  figure width as a multiple of
 the line width as in the example below
-{\small\begin{verbatim}
+   {\small\begin{verbatim}
    \usepackage[dvips]{graphicx} ...
    \includegraphics[width=0.8\linewidth]
                    {myfile.eps}
 \end{verbatim}
-}
+   }
 
 
 %-------------------------------------------------------------------------
@@ -391,19 +408,21 @@ of the use of color in your document.
 
 \begin{table*}
    \begin{center}
-   \begin{tabular}{|l|c|p{8cm}|}
-   \hline
-   Student Name & Contributed Aspects & Details \\
-   \hline\hline
-   Andrew Rollings & Dataset Pre-processing, Architecture Design, Implementation, HP tuning, Report & Came up with initial idea of using CycleGANs and Video Game images, created dataset and associated pre-processing. Tuned GAN hyper-parameters. Helped with report.\\
-   Michael Townsend & Implementation, HP tuning, Metrics, Report & Implemented metrics, Tuned GAN hyper-parameters. Helped with report \\
-   Tyler Thurston & Implementation, Metrics, HP tuning, Version Control, Report & Setup team in version control, Came up with NES color palette metric, Tuned GAN hyper-parameters. Helped with report. \\
-   \hline
-   \end{tabular}
+      \begin{tabular}{|p{3cm}|p{5.5cm}|p{8.5cm}|}
+         \hline
+         Student Name     & Contributed Aspects                                                            & Details                                                                                                                                                            \\
+         \hline\hline
+         Andrew Rollings  & Dataset Pre-processing, Architecture Design, Implementation, HP tuning, Report & Came up with initial idea of using CycleGANs and Video Game images, created dataset and associated pre-processing. Tuned GAN hyper-parameters. Helped with report. \\
+         \hline
+         Michael Townsend & Implementation, HP tuning, Metrics, Report                                     & Implemented metrics, Tuned GAN hyper-parameters. Helped with report                                                                                                \\
+         \hline
+         Tyler Thurston   & Implementation, Metrics, HP tuning, Version Control, Report                    & Setup team in version control, Came up with NES color palette metric, Tuned GAN hyper-parameters. Helped with report.                                              \\
+         \hline
+      \end{tabular}
    \end{center}
    \caption{Contributions of team members.}
    \label{tab:contributions}
-   \end{table*}
+\end{table*}
 
 
 %-------------------------------------------------------------------------
