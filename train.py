@@ -128,15 +128,19 @@ def run_random_search(opt):
         print('Running RANDOM SEARCH with:')
         print(random_opt)
         clear_checkpoint_images()
-        candidate_nes_metric, candidate_snes_metric = main(random_opt)
-        if best_nes_metric is None or candidate_nes_metric > best_nes_metric:
-            best_nes_metric = candidate_nes_metric
-            best_nes_opt = opt
+        try:
+            candidate_nes_metric, candidate_snes_metric = main(random_opt)
+            if best_nes_metric is None or candidate_nes_metric > best_nes_metric:
+                best_nes_metric = candidate_nes_metric
+                best_nes_opt = opt
 
-        if best_snes_metric is None or candidate_snes_metric > best_snes_metric:
-            best_snes_metric = candidate_snes_metric
-            best_snes_opt = opt
-
+            if best_snes_metric is None or candidate_snes_metric > best_snes_metric:
+                best_snes_metric = candidate_snes_metric
+                best_snes_opt = opt
+        except:
+            print("error during last run")
+            pass
+            
     print(f'Best NES metric score: {best_nes_metric}')
     print('Best opt:')
     best_nes_opt = best_nes_opt.__dict__
