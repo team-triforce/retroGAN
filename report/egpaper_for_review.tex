@@ -48,6 +48,17 @@
 
 %%%%%%%%% BODY TEXT
 \section{Introduction/Background/Motivation}
+\textbf{(5 points) What did you try to do? What problem did you try to solve? Articulate your objectives using absolutely no jargon.}
+We tried to create a network for converting screenshots from the NES console to the SNES console and vise-versa. The main problems is that the various consoles have various limitations that define how they look, things like limited color palettes, sprite pixel limit, ability to have transparency or gradients or not.
+
+\textbf{(5 points) How is it done today, and what are the limits of current practice?}
+There is limited current research on this particular domain, as it is limited by lack of proper datasets and the lack of paired data between console generations.
+
+\textbf{(5 points) Who cares? If you are successful, what difference will it make?}
+If success, this can allow the content of a game of a particular video game console to be translated into the style of another's. Pixel artists are a very high demand job and creating high quality pixel art is one of the largest financial strains that can be put on games. Pixel artists are often so hard to find that games will save money by switching to 3D modelling as there are many more artists with more tools to assist with them. This could allow for pixel artists to become more more efficient and could allow taking images from a previous game or generation, and translating it to the current project's generation. For instance, if you had worked previously on a NES game and were making its sequel for the SNES, this could allow someone to take the images of their original game and create new baseline screenshots to allow the pixel artist to only have to tweak the translation instead of starting from scratch. This is also not constrained to translation between NES and SNES, and could be done on other consoles and generations given the proper datasets.
+
+\textbf{(5 points) What data did you use? Provide details about your data, specifically choose the most important aspects of your data mentioned \href{https://arxiv.org/abs/1803.09010}{here}. You don’t have to choose all of them, just the most}relevant.
+A dataset for NES/SNES images doesn't exist in a proper form, so we created our own from various screenshot databases. We implemented our own pre-processing, which included unsupervised color clustering to remove PNG artifacts, and clamping colors to more closely adhere to the console's original color palette from other image color manipulation. (Andrew can easily improve this, we should probably also talk about the motivation, and recommended use from that link maybe)
 
 %-------------------------------------------------------------------------
 %------------------------------------------------------------------------

@@ -1,15 +1,15 @@
 # Fdb version 3
-["bibtex egpaper_for_review"] 1639066337 "egpaper_for_review.aux" "egpaper_for_review.bbl" "egpaper_for_review" 1639066337
+["bibtex egpaper_for_review"] 1639067607 "egpaper_for_review.aux" "egpaper_for_review.bbl" "egpaper_for_review" 1639067643
   "./ieee_fullname.bst" 1638992036 19905 72b73f4cb1c51eaa1a7af8ecad2b6bfb ""
   "egbib.bib" 1639006640 1912 14edabf97d34fc1d46b6df839be8e87c ""
-  "egpaper_for_review.aux" 1639066337 5759 3c32fe5efde70ad6eebf4bc3a8693a9c "pdflatex"
+  "egpaper_for_review.aux" 1639067642 5759 36ee479f5b6e2dcb4e2856eb0c7d2a2e "pdflatex"
   (generated)
   "egpaper_for_review.bbl"
   "egpaper_for_review.blg"
-["pdflatex"] 1639066337 "/home/ubuntu/retroGAN/report/egpaper_for_review.tex" "/home/ubuntu/retroGAN/report/egpaper_for_review.pdf" "egpaper_for_review" 1639066337
+["pdflatex"] 1639067642 "/home/ubuntu/retroGAN/report/egpaper_for_review.tex" "/home/ubuntu/retroGAN/report/egpaper_for_review.pdf" "egpaper_for_review" 1639067643
   "/etc/texmf/web2c/texmf.cnf" 1599755980 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/ubuntu/retroGAN/report/egpaper_for_review.aux" 1639066337 5759 3c32fe5efde70ad6eebf4bc3a8693a9c ""
-  "/home/ubuntu/retroGAN/report/egpaper_for_review.tex" 1639066333 23000 727982411e76522836e0aac65ed83856 ""
+  "/home/ubuntu/retroGAN/report/egpaper_for_review.aux" 1639067642 5759 36ee479f5b6e2dcb4e2856eb0c7d2a2e ""
+  "/home/ubuntu/retroGAN/report/egpaper_for_review.tex" 1639067636 25586 2d13d4b34364b1c942546d52bdc0a1c6 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/adobe/courier/pcrr7t.tfm" 1136768653 960 379cc0019370a9e0208a0a3f949f847a ""
@@ -125,15 +125,15 @@
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1599756128 8256752 2d4d9528d774741e71130dfe75acac5e ""
   "cvpr.sty" 1638992036 8185 9c85e63bb1830fdefeac27370f229c9e ""
   "cvpr_eso.sty" 1638992036 3878 6aa7c08ff2621006e0603349e40a30a8 ""
-  "egpaper_for_review.aux" 1639066337 5759 3c32fe5efde70ad6eebf4bc3a8693a9c "pdflatex"
-  "egpaper_for_review.bbl" 1639066337 1040 dc5b99b4f52e875e4e2c679467fa9ce7 "bibtex egpaper_for_review"
-  "egpaper_for_review.brf" 1639066337 506 57d10d0b5018a8c6fa01e775021e8c47 "pdflatex"
-  "egpaper_for_review.tex" 1639066333 23000 727982411e76522836e0aac65ed83856 ""
+  "egpaper_for_review.aux" 1639067642 5759 36ee479f5b6e2dcb4e2856eb0c7d2a2e "pdflatex"
+  "egpaper_for_review.bbl" 1639067607 1040 dc5b99b4f52e875e4e2c679467fa9ce7 "bibtex egpaper_for_review"
+  "egpaper_for_review.brf" 1639067642 506 6d3ef3ef8cafe30546946f1143dd0329 "pdflatex"
+  "egpaper_for_review.tex" 1639067636 25586 2d13d4b34364b1c942546d52bdc0a1c6 ""
   "eso-pic.sty" 1638992036 9460 d2935ae95b5cd343fcf5887ff530288d ""
   (generated)
   "egpaper_for_review.brf"
+  "/home/ubuntu/retroGAN/report/egpaper_for_review.pdf"
+  "egpaper_for_review.log"
+  "egpaper_for_review.aux"
   "egpaper_for_review.pdf"
   "/home/ubuntu/retroGAN/report/egpaper_for_review.log"
-  "egpaper_for_review.aux"
-  "egpaper_for_review.log"
-  "/home/ubuntu/retroGAN/report/egpaper_for_review.pdf"
