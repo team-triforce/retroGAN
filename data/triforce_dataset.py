@@ -24,6 +24,7 @@ class TriforceDataset(BaseDataset):
         # self.dir_B = os.path.join(opt.dataroot, opt.phase + 'B')  # create a path '/path/to/data/trainB'
 
         self.tf_split = opt.tf_split
+        self.tf_seed = opt.tf_seed
         self.console_a = opt.tf_console_a
         self.console_b = opt.tf_console_b
 
@@ -34,6 +35,7 @@ class TriforceDataset(BaseDataset):
                                                                    ],
                                                        train=opt.isTrain,
                                                        train_pct=self.tf_split,
+                                                       split_seed=self.tf_seed,
                                                        consoles=[console],
                                                        augments_allowed=AugmentFlag.AllowFlipBoth,
                                                        zoom_levels=ZoomLevelFlag.CleanSet,
@@ -113,7 +115,7 @@ def get_triforce_transform(opt, console, params=None, grayscale=False, method=Im
 
     if opt.tf_size_augment != 'none':
         crop = opt.tf_size_augment != 'double_and_reduce_on_save'
-        extra_transforms.append(TriforceNearestNeighborEnlarge2x(seed=int((opt.tf_split + 1) * 100), do_crop=crop))
+        extra_transforms.append(TriforceNearestNeighborEnlarge2x(seed=opt.tf_seed, do_crop=crop))
 
     # ensure image dims are divisible by 256 if necessary
     if 'unet_' in opt.netG:
