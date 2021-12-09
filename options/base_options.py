@@ -99,12 +99,12 @@ class BaseOptions():
         # snes/nes
         parser.add_argument('--tf_split', type=float, default='0.7', help='test/train split for Triforce options.')
         parser.add_argument('--tf_console_a', type=str, default='nes', help='Console A')
-        parser.add_argument('--tf_console_b', type=str, default='nes', help='Console B')
+        parser.add_argument('--tf_console_b', type=str, default='snes', help='Console B')
         parser.add_argument('--tf_clamp', action='store_true',
                             help='if specified, clamp input images to console palette')
         parser.add_argument('--tf_negate', action='store_true',
                             help='if specified, negate image palette')
-
+        parser.add_argument('--tf_seed', type=int, default='0', help='seed for triforce functionality')
         parser.add_argument('--tf_size_augment', type=str, default='none',
                             help='[none | '
                                  'double_and_crop | '
@@ -114,6 +114,8 @@ class BaseOptions():
         parser.add_argument('--tf_enlarge', action='store_true',
                             help='if specified, enlarge image x2 using nearest neighbor '
                                  '(saves to disk back to normal size - TODO)')
+        #parser.add_argument('--random_search', action='store_true', help='if specified, use random hyperparameter search')
+        # parser.add_argument('--random_lr_policy', action='store_true', help='random training policy from [linear | step | plateau | cosine]')
         self.initialized = True
         return parser
 
@@ -190,7 +192,10 @@ class BaseOptions():
             if id >= 0:
                 opt.gpu_ids.append(id)
         if len(opt.gpu_ids) > 0:
+            #try:
             torch.cuda.set_device(opt.gpu_ids[0])
+            #except:
+            #    pass
 
         self.opt = opt
         return self.opt
