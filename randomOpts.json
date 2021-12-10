@@ -11,11 +11,14 @@
 
   "tf_negate": [true, false],
   "tf_size_augment": ["double_and_crop", "none"],
-
-  "n_epochs_decay": [50, 75, 100, 125],
+  "n_epochs": [10, 25, 50, 75],
+  "n_epochs_decay": [10, 25, 50, 75],
   "beta1": [0.1, 0.25, 0.5, 0.75, 0.9],
   "lr": [0.00005, 0.0001, 0.0002, 0.0005, 0.001],
   "gan_mode": ["vanilla", "lsgan"],
   "lr_policy": ["linear", "step", "plateau", "cosine"],
-  "lr_decay_iters": [25, 50, 75, 100]
+  "lr_decay_iters": [25, 50, 75, 100],
+  "lambda_A": [1, 2, 5, 10, 25, 50, 75, 100],
+  "lambda_B": [1, 2, 5, 10, 25, 50, 75, 100],
+  "lambda_identity": [0.1, 0.3, 0.5, 0.7, 0.9]
 }
