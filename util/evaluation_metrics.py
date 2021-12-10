@@ -53,6 +53,6 @@ def compute_snes_color_ratio(img):
     w, h = img.size
     colors = np.array(img.getcolors(maxcolors=w * h))
     total_color_count = len(colors)
-    invalid_colors = (colors & ~0xF8)  # zero out valid bits, leaving only invalid bits
-    snes_color_count = total_color_count - np.sum(invalid_colors != 0)  # count remaining colors with invalid bits
+    invalid_color_count = np.sum([((r & 0x03) & (g & 0x03) & (b & 0x03)) for (_, (r, g, b)) in colors])  # zero out valid bits, leaving only invalid bits
+    snes_color_count = total_color_count - invalid_color_count  # count remaining colors with invalid bits
     return snes_color_count / total_color_count

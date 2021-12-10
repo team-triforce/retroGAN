@@ -18,17 +18,21 @@ See options/base_options.py and options/train_options.py for more training optio
 See training and test tips at: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/master/docs/tips.md
 See frequently asked questions at: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/master/docs/qa.md
 """
+import shutil
 import time
 
+import json
 from numpy import rad2deg
 from options.train_options import TrainOptions
 from data import create_dataset
 from models import create_model
+from util.util import mkdir
 from util.visualizer import Visualizer
 from util import evaluation_metrics, random_search
 import os
 from os.path import join, isdir, exists
 from PIL import Image
+import uuid
 
 # CHECKPOINT_BASE_PATH = r'./checkpoints/triforce/web/images'
 
@@ -86,19 +90,19 @@ def main(opt):
         print('End of epoch %d / %d \t Time Taken: %d sec' % (
         epoch, opt.n_epochs + opt.n_epochs_decay, time.time() - epoch_start_time))
 
-    if opt.random_search:
+    if len(opt.random_search) > 0:
         return compute_metrics()
 
 
 def compute_metrics():
     # get all generated images
-    filtered_images = filter(lambda filename: "fake" in filename, os.listdir(CHECKPOINT_BASE_PATH))
+    filtered_images = filter(lambda filename: "fake" in filename, os.listdir(CHECKPOINT_IMAGE_PATH))
     nes_color_ratio = 0
     snes_color_ratio = 0
     # get images from last epoch
     sorted_images = sorted(filtered_images)[-2:]
     for filename in sorted_images:
-        img = Image.open(join(CHECKPOINT_BASE_PATH, filename))
+        img = Image.open(join(CHECKPOINT_IMAGE_PATH, filename))
         # for now assume fake_A is nes and fake_B is snes
         if "A" in filename:
             nes_color_ratio = evaluation_metrics.compute_nes_color_ratio(img)
@@ -111,53 +115,98 @@ def compute_metrics():
 
 def clear_checkpoint_images():
     # clear checkpoints images folder
-    if isdir(CHECKPOINT_BASE_PATH):
-        for filename in os.listdir(CHECKPOINT_BASE_PATH):
-            os.remove(join(CHECKPOINT_BASE_PATH, filename))
+    if isdir(CHECKPOINT_IMAGE_PATH):
+        for filename in os.listdir(CHECKPOINT_IMAGE_PATH):
+            os.remove(join(CHECKPOINT_IMAGE_PATH, filename))
+
+
+def copyfile(file, src_dir, dst_dir):
+    src_path = os.path.join(src_dir, file)
+    if exists(src_path):
+        mkdir(dst_dir)
+        shutil.copy(src_path, dst_dir)
 
 
 def run_random_search(opt):
     best_nes_opt = None
     best_nes_metric = None
+    best_nes_ix = None
     best_snes_opt = None
     best_snes_metric = None
+    best_snes_ix = None
 
     # create random sets of opts, and train over each one, retaining the best
     random_opts = random_search.get_randomized_opts(opt)
-    for random_opt in random_opts:
+    random_opt_dict = {}
+    for ix, random_opt in enumerate(random_opts):
         print('Running RANDOM SEARCH with:')
         print(random_opt)
         clear_checkpoint_images()
         try:
+        # if True:
             candidate_nes_metric, candidate_snes_metric = main(random_opt)
+
+            dest_dir = str(uuid.uuid4()).replace('-', '')
+            out_dir = os.path.join(CHECKPOINT_BASE_PATH, dest_dir)
+            src_dir = f'{CHECKPOINT_BASE_PATH}'
+            # back up models
+            copyfile('latest_net_D_A.pth', src_dir=src_dir, dst_dir=out_dir)
+            copyfile('latest_net_D_B.pth', src_dir=src_dir, dst_dir=out_dir)
+            copyfile('latest_net_G_A.pth', src_dir=src_dir, dst_dir=out_dir)
+            copyfile('latest_net_G_B.pth', src_dir=src_dir, dst_dir=out_dir)
+            copyfile('log_loss.txt', src_dir=src_dir, dst_dir=out_dir)
+            copyfile('train_opt.txt', src_dir=src_dir, dst_dir=out_dir)
+
+            random_opt_dict[ix] = {
+                'model_directory': dest_dir,
+                'nes_metric': candidate_nes_metric,
+                'snes_metric': candidate_snes_metric,
+                'opts': random_opt.__dict__
+            }
+
+            # save off checkpoint
             if best_nes_metric is None or candidate_nes_metric > best_nes_metric:
                 best_nes_metric = candidate_nes_metric
                 best_nes_opt = opt
+                best_nes_ix = ix
 
             if best_snes_metric is None or candidate_snes_metric > best_snes_metric:
                 best_snes_metric = candidate_snes_metric
                 best_snes_opt = opt
+                best_snes_ix = ix
         except:
             print("error during last run")
             pass
-            
+
+    # write output
+    random_opt_dict['best_nes_id'] = best_nes_ix
+    random_opt_dict['best_snes_id'] = best_snes_ix
+
+    out_filename = os.path.join(CHECKPOINT_BASE_PATH, 'results.json')
+    with open(out_filename, "w") as outfile:
+        json.dump(random_opt_dict, outfile, indent=4)
+
     print(f'Best NES metric score: {best_nes_metric}')
     print('Best opt:')
-    best_nes_opt = best_nes_opt.__dict__
-    for o in best_nes_opt:
-        print(f'{o}: {best_nes_opt[o]}')
+    if best_nes_opt is not None:
+        best_nes_opt = best_nes_opt.__dict__
+        for o in best_nes_opt:
+            print(f'{o}: {best_nes_opt[o]}')
 
     print(f'Best SNES metric score: {best_snes_metric}')
     print('Best opt:')
-    best_snes_opt = best_snes_opt.__dict__
-    for o in best_snes_opt:
-        print(f'{o}: {best_snes_opt[o]}')
+    if best_snes_opt is not None:
+        best_snes_opt = best_snes_opt.__dict__
+        for o in best_snes_opt:
+            print(f'{o}: {best_snes_opt[o]}')
 
 
 if __name__ == '__main__':
     options = TrainOptions().parse()  # get training options
 
-    CHECKPOINT_BASE_PATH = f'{options.checkpoints_dir}/{options.name}/web/images'
+    CHECKPOINT_BASE_PATH = f'{options.checkpoints_dir}/{options.name}'
+    CHECKPOINT_WEB_PATH = f'{CHECKPOINT_BASE_PATH}/web'
+    CHECKPOINT_IMAGE_PATH = f'{CHECKPOINT_WEB_PATH}/images'
 
     if exists(options.random_search):
         run_random_search(options)
