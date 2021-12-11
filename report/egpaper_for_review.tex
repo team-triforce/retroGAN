@@ -43,16 +43,18 @@
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-   Video games from the retro era have a signature style due to the limitations of technology at the time. Limitations on resolution, color, bandwidth, and power all created constraints that led video game creators to make certain patterns. Using a CycleGAN architecture to allow unpaired translation, we can learn from data of two separate video game generations and translate images from one generation to the other. Our results show that we can take images from the Nintendo Entertainment System(NES) and Super Nintendo(SNES) and translate screenshots from both consoles into the style of the other. Experiments demonstrate that the CycleGAN architecture can learn many constraints of each system in order to translate realistic images.
+   Video games from the retro era have a signature style due to the 8-bit and 16-bit technology at the time. Limitations on resolution, color, bandwidth, and processing power all created constraints that limited the vision and scope of what video game creators could implement. \\Using a CycleGAN architecture to allow unpaired translation, we can learn from data of two separate video game generations (8-bit and 16-bit) and translate images from one generation to the other. Our results show that we can take images from the Nintendo Entertainment System(NES) and Super Nintendo(SNES) and translate screenshots from both consoles into the style of the other. Experiments demonstrate that the CycleGAN architecture can learn many constraints of each system in order to perform relatively accurate translations between generations.
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
 \section{Introduction/Background/Motivation}
 \textbf{(5 points) What did you try to do? What problem did you try to solve? Articulate your objectives using absolutely no jargon.}
-We tried to create a network for converting screenshots from the NES console to the SNES console and vise-versa. The main problems is that the various consoles have various limitations that define how they look, things like limited color palettes, sprite pixel limit, ability to have transparency or gradients or not.
+In the 1980s, 8-bit consoles were king. These were characterized by limited color palettes and relatively simple 2D graphics. In the 90s, 16-bit consoles took over and offered increased power, color palettes and the ability to display more complex graphics.\\
+Despite huge advances in technology, retro-games from the 8- and 16-bit eras remain popular, as evidenced by the number of remakes, emulators and even specialist magazines.\\
+Our experiment is based on the observation that the primary difference between 8- and 16-bit games (as exemplified by the NES and SNES, respectively) was in the fidelity of the graphics. Additionally, many of the graphical remasters today view the 16-bit era as the gold standard in pixel-based artwork, given that the graphical capabilities of the SNES still allowed artists to express themselves far more than the limited NES.\\
 
 \textbf{(5 points) How is it done today, and what are the limits of current practice?}
-There is limited current research on this particular domain, as it is limited by lack of proper datasets and the lack of paired data between console generations.
+Another areas of interest is in software emulators that are often used to breathe life into older games. For example, the Nintendo Switch provides a paid emulation service that allows players to access a library of older games. In some cases, the emulators provide graphical filters that allow the appearance of the game to be altered (e.g. a CRT filter, or an up-scaling filter). However, currently the only way to improve the graphical color depth of a game is for an artist to redraw all of the game's graphics.
 
 \textbf{(5 points) Who cares? If you are successful, what difference will it make?}
 If success, this can allow the content of a game of a particular video game console to be translated into the style of another's. Pixel artists are a very high demand job and creating high quality pixel art is one of the largest financial strains that can be put on games. Pixel artists are often so hard to find that games will save money by switching to 3D modelling as there are many more artists with more tools to assist with them. This could allow for pixel artists to become more more efficient and could allow taking images from a previous game or generation, and translating it to the current project's generation. For instance, if you had worked previously on a NES game and were making its sequel for the SNES, this could allow someone to take the images of their original game and create new baseline screenshots to allow the pixel artist to only have to tweak the translation instead of starting from scratch. This is also not constrained to translation between NES and SNES, and could be done on other consoles and generations given the proper datasets.
@@ -408,19 +410,21 @@ of the use of color in your document.
 
 \begin{table*}
    \begin{center}
-      \begin{tabular}{|l|c|p{8cm}|}
-         \hline
-         Student Name     & Contributed Aspects                                                            & Details                                                                                                                                                            \\
-         \hline\hline
-         Andrew Rollings  & Dataset Pre-processing, Architecture Design, Implementation, HP tuning, Report & Came up with initial idea of using CycleGANs and Video Game images, created dataset and associated pre-processing. Tuned GAN hyper-parameters. Helped with report. \\
-         Michael Townsend & Implementation, HP tuning, Metrics, Report                                     & Implemented metrics, Tuned GAN hyper-parameters. Helped with report                                                                                                \\
-         Tyler Thurston   & Implementation, Metrics, HP tuning, Version Control, Report                    & Setup team in version control, Came up with NES color palette metric, Tuned GAN hyper-parameters. Helped with report.                                              \\
-         \hline
-      \end{tabular}
+   \begin{tabular}{|p{3cm}|p{5.5cm}|p{8.5cm}|}
+   \hline
+   \textbf{Student Name} & \textbf{Contributed Aspects} & \textbf{Details} \\
+   \hline\hline
+   Andrew Rollings & Dataset Pre-processing, Architecture Design, Implementation, HP tuning, Report & Came up with initial idea of using CycleGANs and Video Game images, created dataset and associated pre-processing. Tuned GAN hyper-parameters. Helped with report.\\
+   \hline
+   Michael Townsend & Implementation, HP tuning, Metrics, Report & Implemented metrics, Tuned GAN hyper-parameters. Helped with report \\
+   \hline
+   Tyler Thurston & Implementation, Metrics, HP tuning, Version Control, Report & Setup team in version control, Came up with NES color palette metric, Tuned GAN hyper-parameters. Helped with report. \\
+   \hline
+   \end{tabular}
    \end{center}
    \caption{Contributions of team members.}
    \label{tab:contributions}
-\end{table*}
+   \end{table*}
 
 
 %-------------------------------------------------------------------------
