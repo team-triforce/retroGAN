@@ -6,6 +6,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{subcaption} 
 
 % Include other packages here, before hyperref.
 
@@ -80,6 +81,26 @@ We wanted to try translation between video game console images of different gene
 We anticipated plenty of issues. While the main difference between the NES and SNES is their available color palettes, the NES also has several other restrictions such a pixel limits and more limited color palettes per sprite. This was anticipated to be very difficult to generalize without magnitudes more data. We didn't see great results in our first attempt, however after doing some fairly basic pre-processing to remove artifacts from our images, we started seeing interesting results with convincing translations very early on.
 
 \textbf{\textcolor{blue}{Important: Mention any code repositories (with citations) or other sources that you used, and specifically what changes you made to them for your project.}}
+
+\section{NES / SNES Palette Considerations}
+The NES palette comprises 56 fixed colors, whereas the SNES is more flexible with a full 15-bit RGB palette (with 5 bits for each of the red, green and blue channels), as shown in \ref{fig:nes} and \ref{fig:snes} respectively.
+
+As such, for an effective conversion, the GAN must learn to be conform to each palette. In the case of SNES ${\rightarrow}$ NES, this could be as simple as a naive nearest color reduction from the 15-bit SNES palette to the fixed NES palette. Similarly, for the NES ${\rightarrow}$ SNES conversion, the GAN could simply ensure that the chosen colors fit the 15-bit RGB restriction. However, we hoped for (and observed) more complex behaviors than this, implying that the GAN was able to somewhat successfully extract more of the stylistic differences between NES and SNES graphics. This will be discussed in later sections.
+
+\begin{figure}[htp]
+	\centering
+	\begin{subfigure}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{figures/NES_palette_color_test_chart.png}
+		\caption{NES}
+		\label{fig:nes}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\textwidth}
+		\includegraphics[width=\textwidth]{figures/SNES_palette_color_test_chart.png}
+		\caption{SNES}
+		\label{fig:snes}
+	\end{subfigure}
+	\caption{Color palettes for NES and SNES}
+\end{figure}
 
 \section{Experiments and Results}
 
