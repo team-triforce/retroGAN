@@ -154,7 +154,7 @@ def run_random_search(opt):
             copyfile('latest_net_D_B.pth', src_dir=src_dir, dst_dir=out_dir)
             copyfile('latest_net_G_A.pth', src_dir=src_dir, dst_dir=out_dir)
             copyfile('latest_net_G_B.pth', src_dir=src_dir, dst_dir=out_dir)
-            copyfile('log_loss.txt', src_dir=src_dir, dst_dir=out_dir)
+            copyfile('loss_log.txt', src_dir=src_dir, dst_dir=out_dir)
             copyfile('train_opt.txt', src_dir=src_dir, dst_dir=out_dir)
 
             random_opt_dict[ix] = {
