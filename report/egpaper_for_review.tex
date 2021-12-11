@@ -53,14 +53,15 @@
 In the 1980s, 8-bit consoles were king. These were characterized by limited color palettes and relatively simple 2D graphics. In the 1990s, 16-bit consoles took over and offered increased power, color palettes and the ability to display more complex graphics.\\
 Despite huge advances in technology, retro-games from the 8- and 16-bit eras remain popular, as evidenced by the number of remakes, emulators and even specialist magazines.\\
 Our experiment is based on the observation that the primary difference between 8- and 16-bit games (as exemplified by the NES and SNES, respectively) was in the fidelity of the graphics. Additionally, many of the graphical remasters today view the 16-bit era as the gold standard in pixel-based artwork, given that the graphical capabilities of the SNES still allowed artists to express themselves far more than the limited NES.\\
+Our primary objective is to train two systems, one that can take in an 8-bit NES graphic and upscale it to a realistic 16-bit version and another system that can take in a 16-bit SNES graphic and downscale it to a realistic 8-bit version.
 
 \textit{\textcolor{blue}{(5 points) How is it done today, and what are the limits of current practice?}}
 
-Another areas of interest is in software emulators that are often used to breathe life into older games. For example, the Nintendo Switch provides a paid emulation service that allows players to access a library of older games. In some cases, the emulators provide graphical filters that allow the appearance of the game to be altered (e.g. a CRT filter, or an up-scaling filter). However, currently the only way to improve the graphical color depth of a game is for an artist to redraw all of the game's graphics.
+Another area of interest is in software emulators that are often used to breathe life into older games. For example, the Nintendo Switch provides a paid emulation service that allows players to access a library of older games. In some cases, the emulators provide graphical filters that allow the appearance of the game to be altered (e.g. a CRT filter, or an up-scaling filter). However, currently the only way to improve the graphical color depth of a game is for an artist to redraw all of the game's graphics.
 
 \textit{\textcolor{blue}{(5 points) Who cares? If you are successful, what difference will it make?}}
 
-If success, this can allow the content of a game of a particular video game console to be translated into the style of another's. Pixel artists are a very high demand job and creating high quality pixel art is one of the largest financial strains that can be put on games. Pixel artists are often so hard to find that games will save money by switching to 3D modeling as there are many more artists with more tools to assist with them. This could allow for pixel artists to become more more efficient and could allow taking images from a previous game or generation, and translating it to the current project's generation. For instance, if you had worked previously on a NES game and were making its sequel for the SNES, this could allow someone to take the images of their original game and create new baseline screenshots to allow the pixel artist to only have to tweak the translation instead of starting from scratch. This is also not constrained to translation between NES and SNES, and could be done on other consoles and generations given the proper datasets.
+If successful, this can allow the graphical content of a particular video game console to be translated into the style of another. Pixel artists are in very high demand and creating high quality pixel art is one of the largest financial strains that can be put on games. Pixel artists are often so hard to find that studios will save money by switching to 3D modeling as there are more artists and tools to assist them. This could allow for pixel artists to become more efficient, taking images from a previous game or console generation and translating it to the current project's generation. For instance, if you had worked previously on an NES game and were making its sequel for the SNES, retroGAN enables someone to take the images from the original game and create new baseline screenshots for the sequel. Pixel artists would only need to tweak the translation instead of starting from scratch. This is also not constrained to translation between NES and SNES, and could be done on other consoles and generations given the proper datasets.
 
 \textit{\textcolor{blue}{(5 points) What data did you use? Provide details about your data, specifically choose the most important aspects of your data mentioned \href{https://arxiv.org/abs/1803.09010}{here}. You don’t have to choose all of them, just the most relevant.}}
 
@@ -72,7 +73,7 @@ A dataset for NES/SNES images doesn't exist in a proper form, so we created our 
 
 \textit{\textcolor{blue}{(10 points) What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?}}
 
-We wanted to try translation between video game consoles images of different generations, the issue is that it isn't realistic to have paired data of this since each generation of console will consist almost solely of different games(with a small exception of remakes). We thought CycleGAN would be a good option for success as it doesn't require paired data and is also able to take flexible image sizes, which is a great quality as we added our own custom datasets. We initially started by taking the driver code for the original CycleGAN paper \cite{CycleGAN}. We then removed all of the code related to pix2pix and added our own datasets, pre-processing, augmentation, hyper-parameter tuning code, and metrics. Our approach is using the existing CycleGAN architecture, however our dataset is unique and to our knowledge, no one has properly explored this type of translation in this architecture.
+We wanted to try translation between video game console images of different generations. The primary problem was a lack of paired image data (an image from each generation) since each console generation consists almost solely of different games(with a small exception of remakes). We thought CycleGAN would be a successful option as it doesn't require paired data and is also able to take flexible image sizes, which is a great quality as we added our own custom datasets. We initially started by taking the driver code for the original CycleGAN paper \cite{CycleGAN}. We then removed all of the code related to pix2pix and added our own datasets, pre-processing, augmentation, hyper-parameter tuning code, and metrics. Our approach using the existing CycleGAN architecture with our custom dataset is unique and to our knowledge, no one has properly explored this type of translation.
 
 \textit{\textcolor{blue}{(5 points) What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?}}
 
@@ -107,9 +108,11 @@ This also seems free. We should probably go into the architecture of each GAN ju
 
 \textit{\textcolor{blue}{What was the structure of your problem? How did the structure of your model reflect the structure of your problem?}} 
 
+Our problem had two main pieces, a set of NES images and a set of SNES images, without a succesful way to map from one domain to the other. The CycleGAN model fit our needs perfectly. Since it is composed of two GANs and two discrimiators, it learned a mapping between domains.
+
 \textit{\textcolor{blue}{What parts of your model had learned parameters (e.g., convolution layers) and what parts did not (e.g., post-processing classifier probabilities into decisions)? }}
 
-Should definitely cover this, at least briefly.
+Both GANs and discriminators had learned parameters. The model trained one GAN to make NES images and the other to make SNES images while the two discriminators were trained to detect real and fake NES and SNES images, respectively.
 
 \textit{\textcolor{blue}{What representations of input and output did the neural network expect? How was the data pre/post-processed?}}
 
@@ -125,7 +128,9 @@ This is probably a good way to talk about our augmentation and how it helps with
 
 \textit{\textcolor{blue}{What hyperparameters did the model have? How were they chosen? How did they affect performance? What optimizer was used?}}
 
-Probably should only talk about the major ones we used (dataset size, LR, the GAN types, whatever)
+The original CycleGAN architecture did not have a method for finding the best hyperparameters. We built a wrapper around the train function that allowed us to randomize the available hyperparameters and run multiple training iterations, evaluating each one and retaining the best performing. 
+
+TODO: Add in the hyperparameters we ended up using.
 
 \textit{\textcolor{blue}{What Deep Learning framework did you use?}}
 
@@ -133,11 +138,17 @@ PyTorch
 
 \textit{\textcolor{blue}{What existing code or models did you start with and what did those starting points provide?}}
 
-This is where we should talk about CycleGAN.
+We used a CycleGAN framework, which is composed of two GANs and two discriminators. The first GAN generates an image, which is passed to the first discriminator, making a prediction on whether the image received is real or fake. The image is then passed to a second GAN, which tries to remake the original image. The output is then passed to a second discriminator, which evaluates whether it received a real or fake image.
+
+The framework provided a first pass implementation for us, giving time to align the framework to our specific problem.
 
 \textit{\textcolor{blue}{Briefly discuss potential future work that the research community could focus on to make improvements in the direction of your project's topic.}}
 
 This is an interesting one, we could talk about using sprites, more data, other consoles, using the metrics we made with loss, all sorts of stuff.
+
+Additional work could focus on expanding the consoles that the framework could work on. For example, mapping from 16-bit to 32-bit or even mapping larger jumps from 16-bit to 64-bit. There would be added complexity to this, which may result in needing larger training sets or alternate loss functions. 
+
+Alternate loss functions in particular are an intersting area for further research. The CycleGAN architecture was built for the general problem on mapping images from one domain to another. However, for the specific problem of mapping images from one console generation to another, loss functions could be more precise. Others could research using the loss function to additionally model the console's graphical constraints, learning the exact color palette of each console generation.
 
 %-------------------------------------------------------------------------
 
