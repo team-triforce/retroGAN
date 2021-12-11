@@ -161,3 +161,13 @@ def get_nes_color_palette():
             (160, 214, 228),
             (160, 162, 160)]
 
+
+_snes_palette = []
+for r in range(0, 32):
+    for g in range(0, 32):
+        for b in range(0, 32):
+            _snes_palette.append([r << 3, g << 3, b << 3])
+
+
+def get_snes_color_palette():
+    return _snes_palette

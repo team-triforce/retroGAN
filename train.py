@@ -105,9 +105,9 @@ def compute_metrics():
         img = Image.open(join(CHECKPOINT_IMAGE_PATH, filename))
         # for now assume fake_A is nes and fake_B is snes
         if "A" in filename:
-            nes_color_ratio = evaluation_metrics.compute_nes_color_ratio(img)
+            nes_color_ratio = evaluation_metrics.compute_nes_color_score(img)
         else:
-            snes_color_ratio = evaluation_metrics.compute_snes_color_ratio(img)
+            snes_color_ratio = evaluation_metrics.compute_snes_color_score(img)
     print(f'Ratio of correct NES colors: {nes_color_ratio}')
     print(f'Ratio of correct SNES colors: {snes_color_ratio}')
     return nes_color_ratio, snes_color_ratio
@@ -169,22 +169,25 @@ def run_random_search(opt):
                 best_nes_metric = candidate_nes_metric
                 best_nes_opt = opt
                 best_nes_ix = ix
+                random_opt_dict['best_nes_id'] = best_nes_ix
 
             if best_snes_metric is None or candidate_snes_metric > best_snes_metric:
                 best_snes_metric = candidate_snes_metric
                 best_snes_opt = opt
                 best_snes_ix = ix
+                random_opt_dict['best_snes_id'] = best_snes_ix
+
+            # ensure results are written
+            out_filename = os.path.join(CHECKPOINT_BASE_PATH, 'results.json')
+            with open(out_filename, "w") as outfile:
+                json.dump(random_opt_dict, outfile, indent=4)
+
         except:
             print("error during last run")
             pass
 
     # write output
-    random_opt_dict['best_nes_id'] = best_nes_ix
-    random_opt_dict['best_snes_id'] = best_snes_ix
 
-    out_filename = os.path.join(CHECKPOINT_BASE_PATH, 'results.json')
-    with open(out_filename, "w") as outfile:
-        json.dump(random_opt_dict, outfile, indent=4)
 
     print(f'Best NES metric score: {best_nes_metric}')
     print('Best opt:')
