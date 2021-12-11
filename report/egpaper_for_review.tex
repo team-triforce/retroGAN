@@ -44,7 +44,7 @@
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-   Video games from the retro era have a signature style due to the 8-bit and 16-bit technology at the time. Limitations on resolution, color, bandwidth, and processing power all created constraints that limited the vision and scope of what video game creators could implement. \\Using a CycleGAN architecture to allow unpaired translation, we can learn from data of two separate video game generations (8-bit and 16-bit) and translate images from one generation to the other. Our results show that we can take images from the Nintendo Entertainment System(NES) and Super Nintendo(SNES) and translate screenshots from both consoles into the style of the other. Experiments demonstrate that the CycleGAN architecture can learn many constraints of each system in order to perform relatively accurate translations between generations.
+   Video games from the retro era have a signature style due to the 8-bit and 16-bit technology at the time. Limitations on resolution, color, bandwidth, and processing power all created constraints that limited the vision and scope of what video game creators could implement. \\Using a CycleGAN architecture to allow unpaired translation, we can learn from data of two separate video game generations (8-bit and 16-bit) and translate images from one generation to the other. Our results show that we can take images from the Nintendo Entertainment System (NES) and Super Nintendo (SNES) and translate screenshots from both consoles into the style of the other. Experiments demonstrate that the CycleGAN architecture can learn many constraints of each system in order to perform relatively accurate translations between generations.
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
@@ -91,12 +91,12 @@ As such, for an effective conversion, the GAN must learn to be conform to each p
 	\centering
 	\begin{subfigure}[b]{0.4\textwidth}
 		\includegraphics[width=\textwidth]{figures/NES_palette_color_test_chart.png}
-		\caption{NES}
+		\caption{NES 56 Color Palette}
 		\label{fig:nes}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.4\textwidth}
 		\includegraphics[width=\textwidth]{figures/SNES_palette_color_test_chart.png}
-		\caption{SNES}
+		\caption{SNES 15-bit Palette}
 		\label{fig:snes}
 	\end{subfigure}
 	\caption{Color palettes for NES and SNES}
