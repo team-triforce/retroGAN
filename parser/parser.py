@@ -2,6 +2,7 @@ from typing import NamedTuple
 from matplotlib import pyplot as plt
 import argparse
 import re
+import os
 import numpy as np
 
 
@@ -38,6 +39,8 @@ def graph_loss(ld, args):
 
     plt.grid()
     plt.legend()
+    if not os.path.isdir('graphs'):
+        os.mkdir('graphs')
     plt.savefig(f'graphs/{args.outputFile}.png')
 
 
