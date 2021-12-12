@@ -8,6 +8,8 @@
 \usepackage{amssymb}
 \usepackage{subcaption} 
 \usepackage{float}
+\usepackage[boxed]{algorithm2e}
+\usepackage{algorithmic}
 
 % Include other packages here, before hyperref.
 
@@ -30,9 +32,9 @@
 \title{RetroGAN: Translating Unpaired Video Game Images Using CycleGANs}
 
 \author{Andrew Rollings, Michael Townsend, Tyler Thurston\\
-   Georgia Institute of Technology\\
-   % NOTE: Do we include email?
-   %{\tt\small andrew\_email@gatech.edu, michael\_email@gatech.edu, tthurston7@gatech.edu}
+Georgia Institute of Technology\\
+% NOTE: Do we include email?
+{\tt\small arollings3@gatech.edu, mtownsend31@gatech.edu, tthurston7@gatech.edu}
 }
 % For a paper whose authors are all at the same institution,
 % omit the following lines up until the closing ``}''.
@@ -45,7 +47,7 @@
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-   Video games from the retro era have a signature style due to the 8-bit and 16-bit technology at the time. Limitations on resolution, color, bandwidth, and processing power all created constraints that limited the vision and scope of what video game creators could implement. \\Using a CycleGAN architecture to allow unpaired translation, we can learn from data of two separate video game generations (8-bit and 16-bit) and translate images from one generation to the other. Our results show that we can take images from the Nintendo Entertainment System (NES) and Super Nintendo (SNES) and translate screenshots from both consoles into the style of the other. Experiments demonstrate that the CycleGAN architecture can learn many constraints of each system in order to perform relatively accurate translations between generations.
+   Video games from the retro era have a signature style due to the 8-bit and 16-bit technology at the time. Limitations on resolution, color, bandwidth, and processing power all created constraints that limited the vision and scope of what video game creators could implement. Using a CycleGAN architecture to allow unpaired translation, we can learn from screenshot data of two separate video game generations (8-bit and 16-bit) and translate images from one generation to the other. Our results show that we can take images from the Nintendo Entertainment System (NES) and Super Nintendo (SNES) and translate screenshots from both consoles into the style of the other. Experiments demonstrate that the CycleGAN architecture can learn many constraints of each system in order to perform relatively accurate translations between generations.
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
@@ -53,21 +55,21 @@
 \textit{\textcolor{blue}{(5 points) What did you try to do? What problem did you try to solve? Articulate your objectives using absolutely no jargon.}}
 
 In the 1980s, 8-bit consoles were king. These were characterized by limited color palettes and relatively simple 2D graphics. In the 1990s, 16-bit consoles took over and offered increased power, color palettes and the ability to display more complex graphics.\\
-Despite huge advances in technology, retro-games from the 8- and 16-bit eras remain popular, as evidenced by the number of remakes, emulators and even specialist magazines.\\
+Despite huge advances in technology, retro-games from the 8- and 16-bit eras remain popular, as evidenced by the number of remakes, emulators, modern ``Indie'' games using pixel art and even specialist magazines dedicating to retro gaming.\\
 Our experiment is based on the observation that the primary difference between 8- and 16-bit games (as exemplified by the NES and SNES, respectively) was in the fidelity of the graphics. Additionally, many of the graphical remasters today view the 16-bit era as the gold standard in pixel-based artwork, given that the graphical capabilities of the SNES still allowed artists to express themselves far more than the limited NES.\\
 Our primary objective is to train two systems, one that can take in an 8-bit NES graphic and ``up-convert'' it to a realistic 16-bit version and another system that can take in a 16-bit SNES graphic and ``down-convert'' it to a realistic 8-bit version.
 
 \textit{\textcolor{blue}{(5 points) How is it done today, and what are the limits of current practice?}}
 
-Another area of interest is in software emulators that are often used to breathe life into older games. For example, the Nintendo Switch provides a paid emulation service that allows players to access a library of older games. In some cases, the emulators provide graphical filters that allow the appearance of the game to be altered (e.g. a CRT filter, or a resolution upscaling filter). However, currently the only way to improve the graphical color depth of a game is for an artist to redraw all of the game's graphics.
+Another area of interest is in software emulators that are often used to breathe life into older games. For example, the Nintendo Switch provides a paid emulation service that allows players to access a library of older games. In some cases, the emulators provide graphical filters that allow the appearance of the game to be altered (e.g. a CRT filter, or a resolution upscaling filter). However, currently the only way to improve the graphical color depth of a game is for artists to redraw all of the game's graphics.
 
 \textit{\textcolor{blue}{(5 points) Who cares? If you are successful, what difference will it make?}}
 
-If successful, this can allow the graphical content of a particular video game console to be translated into the style of another. Pixel artists are in very high demand and creating high quality pixel art is one of the largest financial strains that can be put on games. Pixel artists are often so hard to find that studios will save money by switching to 3D modeling as there are more artists and tools to assist them. This could allow for pixel artists to become more efficient, taking images from a previous game or console generation and translating it to the current project's generation. For instance, if you had worked previously on an NES game and were making its sequel for the SNES, retroGAN enables someone to take the images from the original game and create new baseline screenshots for the sequel. Pixel artists would only need to tweak the translation instead of starting from scratch. This is also not constrained to translation between NES and SNES, and could be done on other consoles and generations given the proper datasets.
+If successful, this can allow the graphical content of a particular video game console to be translated into the style of another. Pixel artists are in very high demand and creating high quality pixel art is one of the largest financial strains that can be put on games, and is very time consuming/labor intensive. Pixel artists are often so hard to find that studios will save money by switching to 3D modeling as there are more artists and tools to assist them. This could allow for pixel artists to become more efficient, taking images from a previous game or console generation and translating it to the current project's generation. For instance, if one wished to modernize an 8-bit game, retroGAN enables someone to take the images from the original game and create new baseline screenshots for the sequel. Pixel artists would only need to tweak the translation instead of starting from scratch. There is also the interesting possibility of creating a real-time filter that could do this conversion ``on-the-fly'' as the game is being played. Additionally, this conversion process is not constrained to translation between NES and SNES, and could be done on other consoles and generations given suitable datasets.
 
 \textit{\textcolor{blue}{(5 points) What data did you use? Provide details about your data, specifically choose the most important aspects of your data mentioned \href{https://arxiv.org/abs/1803.09010}{here}. You don’t have to choose all of them, just the most relevant.}}
 
-A dataset for NES/SNES images did not exist in a suitable form, so we created our own from various screenshot databases on the internet. We implemented our own pre-processing, which included unsupervised color clustering to remove image artifacts, clamping colors to more closely adhere to the console's original color palette, resizing and cropping as appropriate, and other noise reduction techniques. This provided us with a reasonably large set of images that were organized into quality categories based on how much preprocessing was required. We cover this in more detail later in the paper. 
+Datasets for NES/SNES images did not exist in a suitable form, so we created our own from various screenshot databases on the internet. We implemented our own pre-processing, which included unsupervised color clustering to remove image artifacts, clamping colors to more closely adhere to the console's original color palette, resizing and cropping as appropriate, and other noise reduction techniques. This provided us with a reasonably large set of images that were organized into quality bands based on how much preprocessing was required. We cover this in more detail later in the paper.
 
 %-------------------------------------------------------------------------
 %------------------------------------------------------------------------
@@ -75,30 +77,30 @@ A dataset for NES/SNES images did not exist in a suitable form, so we created ou
 
 \textit{\textcolor{blue}{(10 points) What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?}}
 
-We attempted to implement translation between video game images from different generations. The primary problem was a lack of paired image data (an image from each generation) since each console generation consists almost solely of different games (with a small number of remakes). We thought CycleGAN had the potential to be a solution as it doesn't require paired data due to the cyclic process for training. That is, a NES image can be converted to a SNES fake by one leg of the cycle, and then the SNES fake can be converted back to a NES ``fake fake'' by the reverse leg. Then the round-trip images (the NES original and its doubly-converted ``fake fake'') can be compared for differences. Both directions of the conversion process (NES$\rightarrow$SNES and SNES$\rightarrow$NES) can be cross-checked in this fashion.
+We attempted to implement translation between video game images from different generations. The primary problem was a lack of paired image data (an image from each generation) since each console generation consists almost solely of different games (with a small number of remakes). We thought CycleGAN had the potential to be a solution as it doesn't require paired data due to the cyclic process for training. That is, a NES image can be converted to a SNES fake by one leg of the cycle, and then the SNES fake can be converted back to a NES ``fake fake'' by the reverse leg. Then the round-trip images (the NES original and its doubly-converted ``fake fake'') can be compared for differences. In an ideal system, the real image and the ``fake fake'' image would be virtually identical. Both directions of the conversion process (NES$\rightarrow$SNES and SNES$\rightarrow$NES) can be cross-checked in this fashion.
 
-We initially started by taking the driver code for the original CycleGAN paper \cite{CycleGAN}. We then removed all of the code not directly related to the CycleGAN model and added our own datasets, pre-processing, augmentation, hyper-parameter tuning code, and metrics. 
+We initially started by taking the driver code\footnote{https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix, Commit Id 00d5574908eb66fe0127b32d7b030001453f21d0} for the original CycleGAN paper \cite{CycleGAN}. We then removed all of the code not directly related to the CycleGAN model and added our own datasets, pre-processing, augmentation, hyper-parameter tuning code, and metrics.
 
-Given the near miraculous results in the literature that have been achieved using CycleGANs with unpaired datasets (and admittedly vast computing resources way beyond our reach), we were reasonably confident that we could use similar techniques to perform a non-trivial conversion between 8-bit and 16-bit screenshots of games. We expected the 16$\rightarrow$8-bit conversion to be much simpler than the 8$\rightarrow$16-bit conversion, but we were hopeful that we might be able to achieve at least some worthwhile results.
+Given the almost miraculous results in the literature that have been achieved using CycleGANs with unpaired datasets (and admittedly vast computing resources way beyond our reach), we were reasonably confident that we could use similar techniques to perform a non-trivial conversion between 8-bit and 16-bit screenshots of games. We expected the 16$\rightarrow$8-bit conversion to be much simpler than the 8$\rightarrow$16-bit conversion, but we were hopeful that we might be able to achieve at least some worthwhile results in the latter case.
 
 Our approach using the existing CycleGAN architecture with our custom dataset is unique and to our knowledge, no one has properly explored this type of translation.
 
 \textit{\textcolor{blue}{(5 points) What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?}}
 
-The main problem we expected was a lack of clean data. While there are plenty of screenshots of games available across the Internet, we could not find any pre-sorted collections of clean images. As such, we ended up writing several custom web scrapers and image processing tools to collect and homogenize screenshots from several game catalog websites. The process of collecting and preparing these datasets is covered in more detail later in the paper.
+The main problem we expected was a lack of clean data. While there are plenty of screenshots of games available across the Internet, we could not find any pre-sorted collections of clean images. As such, we ended up writing several custom web scrapers and image processing tools to collect and homogenize screenshots from several game catalog websites. This process is covered in more detail later in the paper.
 
-Additionally, we had concerns that the CycleGAN would be able to capture the ``pixel-perfect'' constraints and requirements for the conversion process. With prior experiments, CycleGANs have been typically used for experiments that have not required such exact results; for example, the well-known Horse to Zebra results were not conditioned on the exact shades of white and black of the zebra stripes.
+Additionally, we had concerns that the CycleGAN would be able to capture the ``pixel-perfect'' constraints and requirements for the conversion process. Previously, CycleGANs have been typically used for experiments that have not required such exact results; for example, the well-known Horse to Zebra results were not conditioned on the exact shades of white and black of the zebra stripes.
 
-Conversely, in our situation, there are several palette restrictions that apply between the NES and SNES consoles. While the main difference between these consoles is their available color palettes, the NES also has several other graphical restrictions that place some difficult to quantify restrictions on the number of colors in a particular areas of the screen. The SNES also has similar restrictions, although nowhere near as severe. This was anticipated to be very difficult to generalize without magnitudes more data that we had available to us (approximately 100,000 images of varying quality between the two consoles). We didn't see great results in our first attempt, however after performing some additional pre-processing (covered later in this paper), we started seeing interesting results with convincing translations very early on.
+Conversely, in our situation, there are several palette restrictions that apply to the NES and SNES consoles. While the main difference between these consoles is their available color palettes, the NES also has several other graphical restrictions that place some difficult to quantify restrictions on the number of colors in a particular areas of the screen. The SNES also has similar restrictions, although nowhere near as severe. This was anticipated to be very difficult to generalize without magnitudes more data that we had available to us (approximately 100,000 images of varying quality between the two consoles). We didn't see great results in our first attempt, however after performing some additional pre-processing (covered later in this paper), we started seeing interesting results with convincing translations very early on.
 
 \textbf{\textcolor{blue}{Important: Mention any code repositories (with citations) or other sources that you used, and specifically what changes you made to them for your project.}}
 
-\section{NES / SNES Palette Considerations}
+\subsection{NES / SNES Palette Considerations}
 The NES palette comprises 56 fixed colors, whereas the SNES is more flexible with a full 15-bit RGB palette (with 5 bits for each of the red, green and blue channels), as shown in \ref{fig:nes} and \ref{fig:snes} respectively.
 
 As previously mentioned, there are some additional restrictions to how these colors can be used, but we do not cover them here; they are of more concern to emulator writers, and it was hoped that \--- given enough data \--- the CycleGAN would be able to figure these out for itself.
 
-As such, for an effective conversion, the GAN must learn to be conform to each palette. In the case of SNES ${\rightarrow}$ NES, this could be as simple as a naive nearest color reduction from the 15-bit SNES palette to the fixed NES palette. Similarly, for the NES ${\rightarrow}$ SNES conversion, the GAN could simply ensure that the chosen colors fit the 15-bit RGB restriction. However, we hoped for (and observed) more complex behaviors than this, implying that the GAN was able to somewhat successfully extract more of the stylistic differences between NES and SNES graphics. This will be discussed in later sections.
+As such, for an effective conversion, the GAN must learn to be conform to each palette. In the case of SNES${\rightarrow}$NES, this could be as simple as a naive nearest color reduction from the 15-bit SNES palette to the fixed NES palette. Similarly, for the NES${\rightarrow}$SNES conversion, the GAN could simply ensure that the chosen colors fit the 15-bit RGB restriction. However, we hoped for (and observed) more complex behaviors than this, implying that the GAN was able to somewhat successfully extract more of the stylistic differences between NES and SNES graphics. This will be discussed in later sections.
 
 \begin{figure}[htp]
    \centering
@@ -115,8 +117,8 @@ As such, for an effective conversion, the GAN must learn to be conform to each p
    \caption{Color palettes for NES and SNES}
 \end{figure}
 
-\section{Generative Models and CycleGANs}
-For our main architecture, we chose the CycleGAN architecture for the many positives it brings. First, being a Generative Model, it brings us the ability to generate new models via sampling from our implicit density estimation. On top of that, we also were drawn by the advantages of specifically Generative Adversarial Networks(GANs)\cite{GAN}. GANs provide several benefits over other generative models, including not needing labelled data as GANs are unsupervised. They are also flexible on the types of data they ingest. Most importantly, since they sample from their density instead of doing any kind of averaging, GANs result in the sharpest images over other generative models. This is a very important property as retro graphics involve small, sharp pixel placement which makes this a vital quality for this dataset.
+\subsection{Generative Models and CycleGANs}
+For our main architecture, we chose the CycleGAN architecture for the many positives it brings. First, being a Generative Model, it brings us the ability to generate new models via sampling from our implicit density estimation. On top of that, we also were drawn by the advantages of specifically Generative Adversarial Networks(GANs)\cite{GAN}. GANs provide several benefits over other generative models, including not needing labeled data as GANs are unsupervised. They are also flexible on the types of data they ingest. Most importantly, since they sample from their density instead of doing any kind of averaging, GANs result in the sharpest images over other generative models. This is a very important property as retro graphics involve small, sharp pixel placement which makes this a vital quality for this dataset.
 
 Finally, we chose the specific framework of CycleGAN\cite{CycleGAN}, as it provides the ability to translate between two datasets without the need for paired images. Instead of the usual GAN architecture of a single generator and discriminator, the CycleGAN architecture uses mappings: $G$ and $F$ with the goal of having $G$ learn a mapping from domain $X \rightarrow Y$ such that $G(X)$ is indistinguishable from the distribution $Y$ using adversarial loss. However, due to the low constraints of unpaired data, a second, inverse mapping $F: Y \rightarrow X$ is created to induce a cycle consistency loss to push $F(G(X)) \approx X$.
 
@@ -128,17 +130,28 @@ Finally, we chose the specific framework of CycleGAN\cite{CycleGAN}, as it provi
 
 These mappings are combined with two \textit{cycle consistency losses} that can capture the intuition that translating from one domain to another and back again should result to something similar to the original input.
 
+Additionally, an \textit{identity loss} is used to provide color/hue stability. This is defined as $F(X) \approx X$ and $G(Y) \approx Y$. The identity loss is combined with the \textit{cycle consistency loss} proportionally as determined by a bias hyperparameter.
+
+
 \begin{figure}[H]
    \centering
    \includegraphics[width=8cm]{figures/CycleGANChart.png}
    \caption{CycleGAN Architecture}
 \end{figure}
 
-The capabilities of GANs combined with the new flexibility of CycleGANs to allow learning from unpaired images, we finally have the ability for image-to-image translation on our datasets between data of two retro consoles.
+The capabilities of GANs combined with the new flexibility of CycleGANs to allow learning from unpaired images, we have the capability to attempt image-to-image translation on our datasets between screenshot data of the NES and SNES.
 
 \section{Experiments and Results}
 
-\textit{\textcolor{blue}{(10 points) How did you measure success? What experiments were used? What were the results, both quantitative and qualitative? Did you succeed? Did you fail? Why? Justify your reasons with arguments supported by evidence and data.}}
+\textit{\textcolor{blue}{(10 points) How did you measure success?}}
+
+The CycleGAN framework allowed for significant configurability of hyperparameters, and we took full advantage of the flexibility provided. As such, for our first pass success measure, we selected for the hyperparameters that showed the smallest amount of loss for at least \textit{one} direction of the cycle. This gave us a shortlist of candidates to examine that we evaluated manually to determine which to investigate further. One interesting (but not entirely unexpected) observation we found was that the cycle performance was not even; a set of hyperparameters that performed well for the NES$\rightarrow$SNES conversion would not necessarily perform well for the SNES$\rightarrow$NES conversion, and vice versa.
+
+For each promising candidate set, we then ran a customized metric to evaluate the final images for their adherence to the hardware restrictions of each console. We produced several iterations of this metric, before finally settling on Algorithm \ref{alg:alg1}. This metric scores an image based on how closely the pixels match the target console palette modulated by the percentage of image pixels that match the target palette exactly. This modulation was necessary to compensate for the fact that the SNES palette has many more entries, and consequently, it was easier for the algorithm to score highly as any selected color was never too far away from a valid palette entry in RGB space.
+
+Note that this was applied as a post-training evaluation metric. An idea for future work would be to implement this metric as part of the loss function; unfortunately, time constraints prevented us from performing this investigation ourselves.
+
+\textit{\textcolor{blue}{What experiments were used? What were the results, both quantitative and qualitative? Did you succeed? Did you fail? Why? Justify your reasons with arguments supported by evidence and data.}}
 
 Should probably save this entire section for after we've established our final metrics and have screenshots to show.
 
@@ -513,7 +526,7 @@ of the use of color in your document.
          \hline
          Michael Townsend      & Implementation, HP tuning, Metrics, Report                                     & Implemented first pass of custom metrics calculations. Tuned GAN hyper-parameters. Designed and implemented code wrapper for hyper-parameter tuning. Helped with report.                                                                                                                            \\
          \hline
-         Tyler Thurston        & Implementation, Metrics, HP tuning, Version Control, Report                    & Setup team in version control. Git Repository organization and maintenance. Came up with NES color palette metric. Tuned GAN hyper-parameters. Overall planning and scheduling. Helped with report.                                                                                                 \\
+         Tyler Thurston        & Implementation, Metrics, HP tuning, Version Control, Report                    & Setup team in version control. Git Repository organization and maintenance. Came up with NES color palette metric. Graphing coding. Tuned GAN hyper-parameters. Overall planning and scheduling. Helped with report.                                                                                \\
          \hline
       \end{tabular}
    \end{center}
@@ -523,7 +536,33 @@ of the use of color in your document.
 
 
 %-------------------------------------------------------------------------
+\begin{algorithm*}
+   \caption{Metric for evaluating conversion quality}
+   \begin{algorithmic}
+      \label{alg:alg1}
 
+      \STATE $console\_palette \leftarrow$ target console color palette normalized RGB values
+      \STATE $max\_rgb \leftarrow$ corners of RGB space for $all (i, j, k), i=\{0,1\}, j=\{0,1\}, k=\{0,1\}$
+      \STATE $m\_bias \leftarrow 1 / $number of colors in target console color palette
+      \STATE $total\_score \leftarrow 0$
+      \STATE
+      \FOR{each candidate image}
+      \STATE $img\_rgb \leftarrow $ per pixel normalized RGB values
+      \STATE $min\_dists \leftarrow $ min distance between $img\_rgb$ and $console\_palette$
+      \STATE $max\_dists \leftarrow $ min distance between $img\_rgb$ and $max\_rgb$ values.
+      \STATE $match\_pct \leftarrow \sum_{i=1..n}[ 1 $ if $(min\_dists_i < 1)$ else $0] / n$
+      \STATE $bias\_factor \leftarrow max(0, min(1, m\_bias + (1 - m\_bias) \times match\_pct)$
+
+      \STATE $img\_score \leftarrow (\sum_{i=1..n}(max\_dists) - \sum_{i=1..n}(min\_dists)) / \sum_{i=1..n}(max\_dists)$
+      \STATE $total\_score \leftarrow total\_score + img\_score \times bias\_factor$
+
+      \ENDFOR
+
+      \RETURN $total\_score/$number of candidate images
+
+   \end{algorithmic}
+\end{algorithm*}
+%-------------------------------------------------------------------------
 
 {\small
 \bibliographystyle{ieee_fullname}
