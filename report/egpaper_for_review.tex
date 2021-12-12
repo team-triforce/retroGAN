@@ -103,10 +103,10 @@ As such, for an effective conversion, the GAN must learn to be conform to each p
    \caption{Color palettes for NES and SNES}
 \end{figure}
 
-\section{Generative Models and CycleGAN}
+\section{Generative Models and CycleGANs}
 For our main architecture, we chose the CycleGAN architecture for the many positives it brings. First, being a Generative Model, it brings us the ability to generate new models via sampling from our implicit density estimation. On top of that, we also were drawn by the advantages of specifically Generative Adversarial Networks(GANs)\cite{GAN}. GANs provide several benefits over other generative models, including not needing labelled data as GANs are unsupervised. They are also flexible on the types of data they ingest. Most importantly, since they sample from their density instead of doing any kind of averaging, GANs result in the sharpest images over other generative models. This is a very important property as retro graphics involve small, sharp pixel placement which makes this a vital quality for this dataset.
 
-Finally, we finally chose the specific framework of CycleGAN\cite{CycleGAN}, as it provides the ability to translate between two datasets without the need for paired images. Instead of the usual GAN architecture of a single generator and discriminator, the CycleGAN architecture uses mappings: $G$ and $F$ with the goal of having $G$ learn a mapping from domain $X \rightarrow Y$ such that $G(X)$ is indistinguishable from the distribution $Y$ using adversarial loss. However, due to the low constraints of unpaired data, a second, inverse mapping $F: Y \rightarrow X$ is created to induce a cycle consistency loss to push $F(G(X)) \approx X$.
+Finally, we chose the specific framework of CycleGAN\cite{CycleGAN}, as it provides the ability to translate between two datasets without the need for paired images. Instead of the usual GAN architecture of a single generator and discriminator, the CycleGAN architecture uses mappings: $G$ and $F$ with the goal of having $G$ learn a mapping from domain $X \rightarrow Y$ such that $G(X)$ is indistinguishable from the distribution $Y$ using adversarial loss. However, due to the low constraints of unpaired data, a second, inverse mapping $F: Y \rightarrow X$ is created to induce a cycle consistency loss to push $F(G(X)) \approx X$.
 
 \begin{figure}[H]
    \centering
