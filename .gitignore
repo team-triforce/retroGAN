@@ -40,6 +40,19 @@ test/.coverage
 */**/*.dylib*
 test/data/legacy_serialized.pt
 *~
+
+# report filters
+report/*
+!report/*.tex
+!report/*.bib
+!report/*.sty
+!report/*.pdf
+!report/*.txt
+!report/*.bst
+!report/figures
+!report/figures/*.png
+
+
 # .idea
 .idea
 .vscode
