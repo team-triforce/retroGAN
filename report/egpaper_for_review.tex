@@ -7,6 +7,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{subcaption} 
+\usepackage{float}
 
 % Include other packages here, before hyperref.
 
@@ -88,19 +89,40 @@ The NES palette comprises 56 fixed colors, whereas the SNES is more flexible wit
 As such, for an effective conversion, the GAN must learn to be conform to each palette. In the case of SNES ${\rightarrow}$ NES, this could be as simple as a naive nearest color reduction from the 15-bit SNES palette to the fixed NES palette. Similarly, for the NES ${\rightarrow}$ SNES conversion, the GAN could simply ensure that the chosen colors fit the 15-bit RGB restriction. However, we hoped for (and observed) more complex behaviors than this, implying that the GAN was able to somewhat successfully extract more of the stylistic differences between NES and SNES graphics. This will be discussed in later sections.
 
 \begin{figure}[htp]
-	\centering
-	\begin{subfigure}[b]{0.4\textwidth}
-		\includegraphics[width=\textwidth]{figures/NES_palette_color_test_chart.png}
-		\caption{NES 56 Color Palette}
-		\label{fig:nes}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.4\textwidth}
-		\includegraphics[width=\textwidth]{figures/SNES_palette_color_test_chart.png}
-		\caption{SNES 15-bit Palette}
-		\label{fig:snes}
-	\end{subfigure}
-	\caption{Color palettes for NES and SNES}
+   \centering
+   \begin{subfigure}[b]{0.4\textwidth}
+      \includegraphics[width=\textwidth]{figures/NES_palette_color_test_chart.png}
+      \caption{NES 56 Color Palette}
+      \label{fig:nes}
+   \end{subfigure}
+   \begin{subfigure}[b]{0.4\textwidth}
+      \includegraphics[width=\textwidth]{figures/SNES_palette_color_test_chart.png}
+      \caption{SNES 15-bit Palette}
+      \label{fig:snes}
+   \end{subfigure}
+   \caption{Color palettes for NES and SNES}
 \end{figure}
+
+\section{Generative Models and CycleGAN}
+For our main architecture, we chose the CycleGAN architecture for the many positives it brings. First, being a Generative Model, it brings us the ability to generate new models via sampling from our implicit density estimation. On top of that, we also were drawn by the advantages of specifically Generative Adversarial Networks(GANs)\cite{GAN}. GANs provide several benefits over other generative models, including not needing labelled data as GANs are unsupervised. They are also flexible on the types of data they ingest. Most importantly, since they sample from their density instead of doing any kind of averaging, GANs result in the sharpest images over other generative models. This is a very important property as retro graphics involve small, sharp pixel placement which makes this a vital quality for this dataset.
+
+Finally, we finally chose the specific framework of CycleGAN\cite{CycleGAN}, as it provides the ability to translate between two datasets without the need for paired images. Instead of the usual GAN architecture of a single generator and discriminator, the CycleGAN architecture uses mappings: $G$ and $F$ with the goal of having $G$ learn a mapping from domain $X \rightarrow Y$ such that $G(X)$ is indistinguishable from the distribution $Y$ using adversarial loss. However, due to the low constraints of unpaired data, a second, inverse mapping $F: Y \rightarrow X$ is created to induce a cycle consistency loss to push $F(G(X)) \approx X$.
+
+\begin{figure}[H]
+   \centering
+   $G: X \rightarrow Y, F: Y \rightarrow X : F(G(X)) \approx X$
+   \caption{CycleGAN mappings}
+\end{figure}
+
+These mappings are combined with two \textit{cycle consistency losses} that can capture the intuition that translating from one domain to another and back again should result to something similar to the original input.
+
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=8cm]{figures/CycleGANChart.png}
+   \caption{CycleGAN Architure}
+\end{figure}
+
+The capabilities of GANs combined with the new flexibility of CycleGANs to allow learning from unpaired images,we finally have the ability for image-to-image translation on our datasets between data of two retro consoles.
 
 \section{Experiments and Results}
 
@@ -115,11 +137,11 @@ Should probably save this entire section for after we've established our final m
 
 \textit{\textcolor{blue}{You are welcome to introduce additional sections or subsections, if required, to address the following questions in detail.}}
 
-\textit{\textcolor{blue}{(5 points) Appropriate use of figures / tables / visualizations. Are the ideas presented with appropriate illustration? Are the results presented clearly; are the important differences illustrated?}} 
+\textit{\textcolor{blue}{(5 points) Appropriate use of figures / tables / visualizations. Are the ideas presented with appropriate illustration? Are the results presented clearly; are the important differences illustrated?}}
 
 This seems like free points, just properly caption tables and figures. We just need to make sure when we're showing before-after images to make sure we show the metric improving and talk about it in analysis.
 
-\textit{\textcolor{blue}{(5 points) Overall clarity. Is the manuscript self-contained? Can a peer who has also taken Deep Learning understand all of the points addressed above? Is sufficient detail provided?}} 
+\textit{\textcolor{blue}{(5 points) Overall clarity. Is the manuscript self-contained? Can a peer who has also taken Deep Learning understand all of the points addressed above? Is sufficient detail provided?}}
 
 This seems like free points. We probably just need to briefly tough on GANs and give a proper section on how CycleGANs work, as well as some detail between NES and SNES color palettes.
 
@@ -127,7 +149,7 @@ This seems like free points. We probably just need to briefly tough on GANs and 
 
 This also seems free. We should probably go into the architecture of each GAN just so we can estimate how many parameters we have. (should probably wait until final HPs are done)
 
-\textit{\textcolor{blue}{What was the structure of your problem? How did the structure of your model reflect the structure of your problem?}} 
+\textit{\textcolor{blue}{What was the structure of your problem? How did the structure of your model reflect the structure of your problem?}}
 
 Our problem had two main pieces, a set of NES images and a set of SNES images, without a successful way to map from one domain to the other. The CycleGAN model fit our needs perfectly. Since it is composed of two GANs and two discriminators, it learned a mapping between domains.
 
@@ -149,7 +171,7 @@ This is probably a good way to talk about our augmentation and how it helps with
 
 \textit{\textcolor{blue}{What hyperparameters did the model have? How were they chosen? How did they affect performance? What optimizer was used?}}
 
-The original CycleGAN architecture did not have a method for finding the best hyperparameters. We built a wrapper around the train function that allowed us to randomize the available hyperparameters and run multiple training iterations, evaluating each one and retaining the best performing. 
+The original CycleGAN architecture did not have a method for finding the best hyperparameters. We built a wrapper around the train function that allowed us to randomize the available hyperparameters and run multiple training iterations, evaluating each one and retaining the best performing.
 
 TODO: Add in the hyperparameters we ended up using.
 
@@ -167,7 +189,7 @@ The framework provided a first pass implementation for us, giving time to align 
 
 This is an interesting one, we could talk about using sprites, more data, other consoles, using the metrics we made with loss, all sorts of stuff.
 
-Additional work could focus on expanding the consoles that the framework could work on. For example, mapping from 16-bit to 32-bit or even mapping larger jumps from 16-bit to 64-bit. There would be added complexity to this, which may result in needing larger training sets or alternate loss functions. 
+Additional work could focus on expanding the consoles that the framework could work on. For example, mapping from 16-bit to 32-bit or even mapping larger jumps from 16-bit to 64-bit. There would be added complexity to this, which may result in needing larger training sets or alternate loss functions.
 
 Alternate loss functions in particular are an intersting area for further research. The CycleGAN architecture was built for the general problem on mapping images from one domain to another. However, for the specific problem of mapping images from one console generation to another, loss functions could be more precise. Others could research using the loss function to additionally model the console's graphical constraints, learning the exact color palette of each console generation.
 
@@ -462,21 +484,21 @@ of the use of color in your document.
 
 \begin{table*}
    \begin{center}
-   \begin{tabular}{|p{3cm}|p{5.5cm}|p{8.5cm}|}
-   \hline
-   \textbf{Student Name} & \textbf{Contributed Aspects} & \textbf{Details} \\
-   \hline\hline
-   Andrew Rollings & Dataset Pre-processing, Architecture Design, Implementation, HP tuning, Report & Came up with initial idea of using CycleGANs and Video Game images. Created dataset and associated pre-processing. Implemented PyTorch dataset loader compatible with CycleGAN Tuned GAN hyper-parameters. Updated metrics calculation and hyper-parameter tuning wrapper code. Helped with report.\\
-   \hline
-   Michael Townsend & Implementation, HP tuning, Metrics, Report & Implemented first pass of custom metrics calculations. Tuned GAN hyper-parameters. Designed and implemented code wrapper for hyper-parameter tuning. Helped with report. \\
-   \hline
-   Tyler Thurston & Implementation, Metrics, HP tuning, Version Control, Report & Setup team in version control. Git Repository organization and maintenance. Came up with NES color palette metric. Tuned GAN hyper-parameters. Overall planning and scheduling. Helped with report.  \\
-   \hline
-   \end{tabular}
+      \begin{tabular}{|p{3cm}|p{5.5cm}|p{8.5cm}|}
+         \hline
+         \textbf{Student Name} & \textbf{Contributed Aspects}                                                   & \textbf{Details}                                                                                                                                                                                                                                                                                    \\
+         \hline\hline
+         Andrew Rollings       & Dataset Pre-processing, Architecture Design, Implementation, HP tuning, Report & Came up with initial idea of using CycleGANs and Video Game images. Created dataset and associated pre-processing. Implemented PyTorch dataset loader compatible with CycleGAN Tuned GAN hyper-parameters. Updated metrics calculation and hyper-parameter tuning wrapper code. Helped with report. \\
+         \hline
+         Michael Townsend      & Implementation, HP tuning, Metrics, Report                                     & Implemented first pass of custom metrics calculations. Tuned GAN hyper-parameters. Designed and implemented code wrapper for hyper-parameter tuning. Helped with report.                                                                                                                            \\
+         \hline
+         Tyler Thurston        & Implementation, Metrics, HP tuning, Version Control, Report                    & Setup team in version control. Git Repository organization and maintenance. Came up with NES color palette metric. Tuned GAN hyper-parameters. Overall planning and scheduling. Helped with report.                                                                                                 \\
+         \hline
+      \end{tabular}
    \end{center}
    \caption{Contributions of team members.}
    \label{tab:contributions}
-   \end{table*}
+\end{table*}
 
 
 %-------------------------------------------------------------------------

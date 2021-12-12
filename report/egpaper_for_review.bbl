@@ -26,6 +26,11 @@ Authors.
 \newblock Frobnication tutorial, 2014.
 \newblock Supplied as additional material {\tt tr.pdf}.
 
+\bibitem{GAN}
+Ian~J. Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David
+  Warde-Farley, Sherjil Ozair, Aaron Courville, and Yoshua Bengio.
+\newblock Generative adversarial networks, 2014.
+
 \bibitem{CycleGAN}
 Jun{-}Yan Zhu, Taesung Park, Phillip Isola, and Alexei~A. Efros.
 \newblock Unpaired image-to-image translation using cycle-consistent
