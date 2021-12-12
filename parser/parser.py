@@ -5,14 +5,7 @@ import re
 import numpy as np
 
 
-class lossParser:
-    def __init__():
-        self.lossDict = {}
-
-
-"""Parse loss from a file, assuming the style of checkpoints/loss_log.txt but with only a single run in it with no headers"""
-
-
+# Parse loss from a file, assuming the style of checkpoints/loss_log.txt but with only a single run in it with no headers
 def parse_loss(file):
     # regex pattern
     p = r'\(epoch: (\d+), iters: (\d+), time: (\S+), data: (\S+)\) D_A: (\S+) G_A: (\S+) cycle_A: (\S+) idt_A: (\S+) D_B: (\S+) G_B: (\S+) cycle_B: (\S+) idt_B: (\S+)\s*'
@@ -29,14 +22,11 @@ def parse_loss(file):
         return lossDict
 
 
-"""Take Dictionary of Losses from parse_loss and save graph files"""
-
-
+# Take Dictionary of Losses from parse_loss and save graph files
 def graph_loss(ld, args):
 
     # calculate X-axis value combining epoch and iter
     x = ld['epoch'] + ld['iters'] / np.max(ld['iters'])
-    print(x)
 
     plt.figure()
     plt.title(f'{args.type} Graph')
@@ -45,10 +35,10 @@ def graph_loss(ld, args):
     # Graph field we care about
     for y in ['D_A', 'G_A', 'cycle_A', 'idt_A', 'D_B', 'G_B', 'cycle_B', 'idt_B']:
         plt.plot(x, ld[y], label=y)
-        
+
     plt.grid()
     plt.legend()
-    plt.savefig(f'{args.outputFile}.png')
+    plt.savefig(f'graphs/{args.outputFile}.png')
 
 
 if __name__ == '__main__':
@@ -58,7 +48,8 @@ if __name__ == '__main__':
     parser.add_argument('file', type=str, help='input file')
     parser.add_argument('--type', default='Train',
                         help='train or test(graph labeling purposes only')
-    parser.add_argument('--outputFile', default='train_graph', type=str, help='output file name(no extension)')
+    parser.add_argument('--outputFile', default='train_graph',
+                        type=str, help='output file name(no extension)')
     args = parser.parse_args()
 
     lossDict = parse_loss(args.file)
