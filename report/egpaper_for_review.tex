@@ -544,7 +544,8 @@ of the use of color in your document.
 	\STATE $match\_pct \leftarrow \sum_{i=1..n}[ 1 $ if $(min\_dists_i < 1)$ else $0] / n$
 	\STATE $bias\_factor \leftarrow max(0, min(1, m\_bias + (1 - m\_bias) \times match\_pct)$
 	
-	\STATE $total\_score \leftarrow total\_score + (\sum_{i=1..n}(max\_dists) - \sum_{i=1..n}(min\_dists)) / \sum_{i=1..n}(max\_dists)$
+	\STATE $img\_score \leftarrow (\sum_{i=1..n}(max\_dists) - \sum_{i=1..n}(min\_dists)) / \sum_{i=1..n}(max\_dists)$
+	\STATE $total\_score \leftarrow total\_score + img\_score \times bias\_factor$
 	
 \ENDFOR
 
