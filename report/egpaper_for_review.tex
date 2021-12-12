@@ -55,11 +55,11 @@
 In the 1980s, 8-bit consoles were king. These were characterized by limited color palettes and relatively simple 2D graphics. In the 1990s, 16-bit consoles took over and offered increased power, color palettes and the ability to display more complex graphics.\\
 Despite huge advances in technology, retro-games from the 8- and 16-bit eras remain popular, as evidenced by the number of remakes, emulators and even specialist magazines.\\
 Our experiment is based on the observation that the primary difference between 8- and 16-bit games (as exemplified by the NES and SNES, respectively) was in the fidelity of the graphics. Additionally, many of the graphical remasters today view the 16-bit era as the gold standard in pixel-based artwork, given that the graphical capabilities of the SNES still allowed artists to express themselves far more than the limited NES.\\
-Our primary objective is to train two systems, one that can take in an 8-bit NES graphic and upscale it to a realistic 16-bit version and another system that can take in a 16-bit SNES graphic and downscale it to a realistic 8-bit version.
+Our primary objective is to train two systems, one that can take in an 8-bit NES graphic and ``up-convert'' it to a realistic 16-bit version and another system that can take in a 16-bit SNES graphic and ``down-convert'' it to a realistic 8-bit version.
 
 \textit{\textcolor{blue}{(5 points) How is it done today, and what are the limits of current practice?}}
 
-Another area of interest is in software emulators that are often used to breathe life into older games. For example, the Nintendo Switch provides a paid emulation service that allows players to access a library of older games. In some cases, the emulators provide graphical filters that allow the appearance of the game to be altered (e.g. a CRT filter, or an up-scaling filter). However, currently the only way to improve the graphical color depth of a game is for an artist to redraw all of the game's graphics.
+Another area of interest is in software emulators that are often used to breathe life into older games. For example, the Nintendo Switch provides a paid emulation service that allows players to access a library of older games. In some cases, the emulators provide graphical filters that allow the appearance of the game to be altered (e.g. a CRT filter, or a resolution upscaling filter). However, currently the only way to improve the graphical color depth of a game is for an artist to redraw all of the game's graphics.
 
 \textit{\textcolor{blue}{(5 points) Who cares? If you are successful, what difference will it make?}}
 
@@ -67,7 +67,7 @@ If successful, this can allow the graphical content of a particular video game c
 
 \textit{\textcolor{blue}{(5 points) What data did you use? Provide details about your data, specifically choose the most important aspects of your data mentioned \href{https://arxiv.org/abs/1803.09010}{here}. You don’t have to choose all of them, just the most relevant.}}
 
-A dataset for NES/SNES images doesn't exist in a proper form, so we created our own from various screenshot databases. We implemented our own pre-processing, which included unsupervised color clustering to remove PNG artifacts, and clamping colors to more closely adhere to the console's original color palette from other image color manipulation. (\textcolor{red}{Andrew} can easily improve this, we should probably also talk about the motivation, and recommended use from that link maybe)
+A dataset for NES/SNES images did not exist in a suitable form, so we created our own from various screenshot databases on the internet. We implemented our own pre-processing, which included unsupervised color clustering to remove image artifacts, clamping colors to more closely adhere to the console's original color palette, resizing and cropping as appropriate, and other noise reduction techniques. This provided us with a reasonably large set of images that were organized into quality categories based on how much preprocessing was required. We cover this in more detail later in the paper. 
 
 %-------------------------------------------------------------------------
 %------------------------------------------------------------------------
@@ -85,7 +85,7 @@ Our approach using the existing CycleGAN architecture with our custom dataset is
 
 \textit{\textcolor{blue}{(5 points) What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?}}
 
-The main problem we expected was a lack of clean data. While there are plenty of screenshots of games available across the Internet, we could not find any pre-sorted collections of clean images. As such, we ended up writing several custom web scrapers and image processing tools to collect and homogenize screenshots from several game catalog websites. The process of collecting and processing these datasets is covered in more detail later.
+The main problem we expected was a lack of clean data. While there are plenty of screenshots of games available across the Internet, we could not find any pre-sorted collections of clean images. As such, we ended up writing several custom web scrapers and image processing tools to collect and homogenize screenshots from several game catalog websites. The process of collecting and preparing these datasets is covered in more detail later in the paper.
 
 Additionally, we had concerns that the CycleGAN would be able to capture the ``pixel-perfect'' constraints and requirements for the conversion process. With prior experiments, CycleGANs have been typically used for experiments that have not required such exact results; for example, the well-known Horse to Zebra results were not conditioned on the exact shades of white and black of the zebra stripes.
 
