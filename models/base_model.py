@@ -183,7 +183,10 @@ class BaseModel(ABC):
                (key == 'num_batches_tracked'):
                 state_dict.pop('.'.join(keys))
         else:
-            self.__patch_instance_norm_state_dict(state_dict, getattr(module, key), keys, i + 1)
+            try:
+                self.__patch_instance_norm_state_dict(state_dict, getattr(module, key), keys, i + 1)
+            except:
+                print()
 
     def load_networks(self, epoch):
         """Load all the networks from the disk.
@@ -206,8 +209,12 @@ class BaseModel(ABC):
                     del state_dict._metadata
 
                 # patch InstanceNorm checkpoints prior to 0.4
-                for key in list(state_dict.keys()):  # need to copy keys here because we mutate in loop
-                    self.__patch_instance_norm_state_dict(state_dict, net, key.split('.'))
+                for key in list(state_dict.keys()):
+                    try:
+                        # need to copy keys here because we mutate in loop
+                        self.__patch_instance_norm_state_dict(state_dict, net, key.split('.'))
+                    except:
+                        print()
                 net.load_state_dict(state_dict)
 
     def print_networks(self, verbose):

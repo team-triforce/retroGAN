@@ -45,8 +45,17 @@ class TriforceDataset(BaseDataset):
         self.dataset_b = dataset_maker(self.console_b)
 
         max_data_size = min(min(len(self.dataset_a), len(self.dataset_b)), opt.max_dataset_size)
-        self.A_paths = list(sorted([p for p in self.dataset_a.get_filenames()][:max_data_size]))
-        self.B_paths = list(sorted([p for p in self.dataset_b.get_filenames()][:max_data_size]))
+        if opt.image_file_a is None:
+            self.A_paths = list(sorted([p for p in self.dataset_a.get_filenames()][:max_data_size]))
+        else:
+            self.A_paths = [opt.image_file_a]
+            self.B_paths = self.B_paths[:1]
+        if opt.image_file_b is None:
+            self.B_paths = list(sorted([p for p in self.dataset_b.get_filenames()][:max_data_size]))
+        else:
+            self.A_paths = self.A_paths[:1]
+            self.B_paths = [opt.image_file_b]
+
         self.A_size = len(self.A_paths)  # get the size of dataset A
         self.B_size = len(self.B_paths)  # get the size of dataset B
         btoA = self.opt.direction == 'BtoA'
