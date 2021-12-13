@@ -164,7 +164,7 @@ Using the hyperparameter search driver, each of the three authors ran a random h
 
 \subsection{SNES$\rightarrow$NES Results}
 
-As expected, the SNES$\rightarrow$NES conversion proved to be the most effective cycle leg. For a training group size of 2500, the averaged NES metric was $0.9848$, indicating that across all of the training images, roughly 98\% of the pixels conformed to the NES palette.
+As expected, the SNES$\rightarrow$NES conversion proved to be the most effective cycle leg. For a training group size of 2500 images from the best quality band, the averaged NES metric was $0.9848$, indicating that across all of the training images, roughly 98\% of the pixels conformed to the NES palette.
 
 
 \textcolor{red}{***HYPERPARAMETERS HERE}
@@ -644,6 +644,25 @@ Please refer to the author guidelines on the CVPR 2020 web page for a discussion
 of the use of color in your document.
 
 %------------------------------------------------------------------------
+\section{Appendixes}
+\subsection{Dataset Preparation}
+Due to the lack of any readily available datasets for SNES and NES image, we had to create our own.
+This task was made more difficult due to the number of sources that do not have clean images (for example, badly scaled, artifact-laden and/or watermarked images).
+Ultimately, a web scraper was written that allowed us to extract screenshots from four separate websites: \url{https://mobygames.com}, \url{https://www.video-games-museum.com}, \url{https://superfamicom.org} and \url{https://archive.org}.
+
+Each of these sites had a wide variety of images that required various degrees of preprocessing. As such, the program performed cropping and rescaling as necessary, taking care to preserve pixel detail as much as possible. 
+Next, any images for each console that had more colors than allowed were run through an auto-clustering algorithm to reduce the number of colors below the allowable threshold for that console.
+Finally, each image was then classified into one of three ``quality bands'' depending on the amount of pre-processing required and the fidelity of the final image. The best quality band was reserved for images that required no pre-processing or none other than cropping. The next quality band contained images that  required only cropping, color-correction and/or scaling by a factor of exactly $2\times$, and the final quality band contained images that required scaling of $2.5\times$ after cropping. Any images that did not fit into these three categories were discarded. 
+
+After processing, the best quality band contained roughly $20,000$ images per console, with an overall total of $50,000+$ images per console across all three bands. Note that for the experiments in this paper, we used $2500$ from the best quality band due to training time constraints.
+
+\subsection{Dataset Loading}
+In order to make effective use of the dataset, we had to write a custom PyTorch loader in order to take advantage of the quality bands. This was integrated into the CycleGAN loader to allow seamless handling of the images within the constraints of the existing code.
+
+Additionally, this allowed us to implement additional on-the-fly image processing, and custom transforms such as pixel-doubling and color-clamping. Color clamping was used to ensure that an input image used the correct console palette by forcing the pixels of the image to conform the closest color in the appropriate console palette.
+Pixel doubling was a special case of the inbuilt zoom augmentation of CycleGAN that used nearest-neighbor scaling by a factor of $2x$ rather than the default bicubic, non-integer scaling. This was necessary to preserve the pixel and color integrity of the original image.
+
+
 \newpage
 \begin{table*}
    \begin{center}
