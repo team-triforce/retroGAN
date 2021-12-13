@@ -49,11 +49,11 @@ class TriforceDataset(BaseDataset):
             self.A_paths = list(sorted([p for p in self.dataset_a.get_filenames()][:max_data_size]))
         else:
             self.A_paths = [opt.image_file_a]
-            self.B_paths = self.B_paths[:1]
+            self.B_paths = []
         if opt.image_file_b is None:
             self.B_paths = list(sorted([p for p in self.dataset_b.get_filenames()][:max_data_size]))
         else:
-            self.A_paths = self.A_paths[:1]
+            self.A_paths = []
             self.B_paths = [opt.image_file_b]
 
         self.A_size = len(self.A_paths)  # get the size of dataset A

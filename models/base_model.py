@@ -135,7 +135,6 @@ class BaseModel(ABC):
                 vis = getattr(self, name)
                 if self.opt.tf_size_augment == 'double_and_reduce_on_save':
                     vis = reducer(vis.clone().detach())
-                    print('reducing')
 
                 if self.opt.tf_negate:
                     # negate back to normal
