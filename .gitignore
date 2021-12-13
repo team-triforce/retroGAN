@@ -46,7 +46,6 @@ report/*
 !report/*.tex
 !report/*.bib
 !report/*.sty
-!report/*.pdf
 !report/*.txt
 !report/*.bst
 !report/figures
