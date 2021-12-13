@@ -10,6 +10,10 @@
 \usepackage{float}
 \usepackage[boxed]{algorithm2e}
 \usepackage{algorithmic}
+\usepackage{color}
+\definecolor{darkred}{rgb}{0.8,0,0}
+\definecolor{darkgreen}{rgb}{0,0.6,0}
+\definecolor{darkblue}{rgb}{0,0,0.6}
 
 % Include other packages here, before hyperref.
 
@@ -96,7 +100,7 @@ Conversely, in our situation, there are several palette restrictions that apply 
 \textbf{\textcolor{blue}{Important: Mention any code repositories (with citations) or other sources that you used, and specifically what changes you made to them for your project.}}
 
 \subsection{NES / SNES Palette Considerations}
-The NES palette comprises 56 fixed colors, whereas the SNES is more flexible with a full 15-bit RGB palette (with 5 bits for each of the red, green and blue channels), as shown in Figures \ref{fig:nes} and \ref{fig:snes} respectively.
+The NES palette comprises 56 fixed colors\footnote{https://en.wikipedia.org/wiki/List\_of\_video\_game\_console\_palettes}, whereas the SNES is more flexible with a full 15-bit RGB palette (with 5 bits for each of the red, green and blue channels)\footnote{https://en.wikipedia.org/wiki/List\_of\_monochrome\_and\_RGB\_color\_formats}, as shown in Figures \ref{fig:nes} and \ref{fig:snes} respectively.
 
 As previously mentioned, there are some additional restrictions to how these colors can be used, but we do not cover them here; they are of more concern to emulator writers, and it was hoped that \--- given enough data \--- the CycleGAN would be able to figure these out for itself.
 
@@ -104,12 +108,12 @@ As such, for an effective conversion, the GAN must learn to be conform to each p
 
 \begin{figure}[htp]
    \centering
-   \begin{subfigure}[b]{0.4\textwidth}
+   \begin{subfigure}[b]{0.235\textwidth}
       \includegraphics[width=\textwidth]{figures/NES_palette_color_test_chart.png}
       \caption{NES 56 Color Palette}
       \label{fig:nes}
    \end{subfigure}
-   \begin{subfigure}[b]{0.4\textwidth}
+   \begin{subfigure}[b]{0.235\textwidth}
       \includegraphics[width=\textwidth]{figures/SNES_palette_color_test_chart.png}
       \caption{SNES 15-bit Palette}
       \label{fig:snes}
@@ -132,11 +136,9 @@ Additionally, an \textit{identity loss} is used to provide color/hue stability. 
 
 \begin{figure}[H]
    \centering
-   \includegraphics[width=8cm]{figures/CycleGANChart.png}
+   \includegraphics[width=0.485\textwidth]{figures/CycleGANChart.png}
    \caption{CycleGAN Architecture}
 \end{figure}
-
-The capabilities of GANs combined with the new flexibility of CycleGANs to allow learning from unpaired images, we have the capability to attempt image-to-image translation on our datasets between screenshot data of the NES and SNES.
 
 \section{Experiments and Results}
 
@@ -144,9 +146,13 @@ The capabilities of GANs combined with the new flexibility of CycleGANs to allow
 
 The CycleGAN framework allowed for significant configurability of hyperparameters, and we took full advantage of the flexibility provided. As such, for our first pass success measure, we selected for the hyperparameters that showed the smallest amount of loss for at least \textit{one} direction of the cycle. This gave us a shortlist of candidates to examine that we evaluated manually to determine which to investigate further. One interesting (but not entirely unexpected) observation we found was that the cycle performance was not even; a set of hyperparameters that performed well for the NES$\rightarrow$SNES conversion would not necessarily perform well for the SNES$\rightarrow$NES conversion, and vice versa. 
 
-For each promising candidate set, we then ran a customized metric to evaluate the final images for their adherence to the hardware restrictions of each console. We produced several iterations of this metric, before finally settling on Algorithm \ref{alg:alg1}. This metric scores an image based on how closely the pixels match the target console palette modulated by the percentage of image pixels that match the target palette exactly. This modulation was necessary to compensate for the fact that the SNES palette has many more entries, and consequently, it was easier for the algorithm to score highly as any selected color was never too far away from a valid palette entry in RGB space. Although this metric does not capture 100\% of the intricacies of the NES and SNES screen palette restrictions, it does cover most situations that would occur. In any case, the ability to detect the outlier violations would require intrinsic knowledge of the programming of the particular game that had generated the screenshot, which is far beyond the scope of this paper.
+For each promising candidate set, we then ran a customized metric to evaluate the final images for their adherence to the hardware restrictions of each console. We produced several iterations of this metric, before finally settling on Algorithm \ref{alg:alg1}. 
 
-Note that this was applied as a post-training evaluation metric. An idea for future work would be to implement this metric as part of the loss function; unfortunately, time constraints prevented us from performing this investigation ourselves.
+This metric scores an image based on how closely the pixels match the target console palette modulated by the percentage of image pixels that match the target palette exactly. This modulation was necessary to compensate for the fact that the SNES palette has many more entries, and consequently, it was easier for the algorithm to score highly as any selected color was never too far away from a valid palette entry in RGB space. Although this metric does not capture 100\% of the intricacies of the NES and SNES screen palette restrictions, it does cover most situations that would occur. In any case, the ability to detect the outlier violations would require intrinsic knowledge of the programming of the particular game that had generated the screenshot, which is far beyond the scope of this paper.
+
+In practice, we found that using the stricter NES metric produced more meaningful results; that is, for the SNES$\rightarrow$NES conversion, we found that measuring the increase in value for this metric between the real SNES and fake NES image was a strong indicator of success. Conversely, for the NES$\rightarrow$SNES conversion, the decrease in value of this metric was a good indicator of success.
+
+\textcolor{darkgreen}{Note that this was applied as a post-training evaluation metric. An idea for future work would be to implement this metric as part of the loss function; unfortunately, time constraints prevented us from performing this investigation ourselves.}
 
 \textit{\textcolor{blue}{What experiments were used?}}
 
@@ -154,9 +160,78 @@ Using the hyperparameter search driver, each of the three authors ran a random h
 
 \textit{\textcolor{blue}{What were the results, both quantitative and qualitative? Did you succeed? Did you fail? Why? Justify your reasons with arguments supported by evidence and data.}}
 
+\subsection{SNES$\rightarrow$NES Results}
+
+
 Should probably save this entire section for after we've established our final metrics and have screenshots to show.
 
-\textbf{Important: This section should be rigorous and thorough. Present detailed information about decision you made, why you made them, and any evidence/experimentation to back them up. This is especially true if you leveraged existing architectures, pre-trained models, and code (i.e. do not just show results of fine-tuning a pre-trained model without any analysis, claims/evidence, and conclusions, as that tends to not make a strong project). }
+\textbf{\textcolor{blue}{Important: This section should be rigorous and thorough. Present detailed information about decision you made, why you made them, and any evidence/experimentation to back them up. This is especially true if you leveraged existing architectures, pre-trained models, and code (i.e. do not just show results of fine-tuning a pre-trained model without any analysis, claims/evidence, and conclusions, as that tends to not make a strong project). }}
+
+%% screenshot 1
+\begin{figure}[htp]
+   \centering
+   \begin{subfigure}[b]{0.225\textwidth}
+      \includegraphics[width=\textwidth]{figures/snes_to_nes/AV_Mahjong_Club_(J)_(Unl)_copy__ucc__8_real_B.png}
+      \caption{Real SNES Screenshot}
+      \label{fig:ss1a}
+   \end{subfigure}
+   \begin{subfigure}[b]{0.225\textwidth}
+      \includegraphics[width=\textwidth]{figures/snes_to_nes/AV_Mahjong_Club_(J)_(Unl)_copy__ucc__8_fake_A.png}
+      \caption{Fake NES screenshot}
+      \label{fig:ss1b}
+   \end{subfigure}
+   \caption{SNES$\rightarrow$NES Example 1}
+\end{figure}
+
+%% screenshot 2
+\begin{figure}[htp]
+   \centering
+   \begin{subfigure}[b]{0.235\textwidth}
+      \includegraphics[width=\textwidth]{figures/snes_to_nes/ghouls_n_ghosts_real_B.png}
+      \caption{Real SNES Screenshot}
+      \label{fig:ss2a}
+   \end{subfigure}
+   \begin{subfigure}[b]{0.235\textwidth}
+      \includegraphics[width=\textwidth]{figures/snes_to_nes/ghouls_n_ghosts_fake_a.png}
+      \caption{Fake NES screenshot}
+      \label{fig:ss2b}
+   \end{subfigure}
+   \caption{SNES$\rightarrow$NES Example 2}
+\end{figure}
+
+\subsection{NES$\rightarrow$SNES Results}
+%% screenshot 3
+\begin{figure}[htp]
+   \centering
+   \begin{subfigure}[b]{0.235\textwidth}
+      \includegraphics[width=\textwidth]{figures/nes_to_snes/Crisis_Force_(J)__ucc__12_real_A.png}
+      \caption{Real NES Screenshot}
+      \label{fig:ss3a}
+   \end{subfigure}
+   \begin{subfigure}[b]{0.235\textwidth}
+      \includegraphics[width=\textwidth]{figures/nes_to_snes/Crisis_Force_(J)__ucc__12_fake_B.png}
+      \caption{Fake SNES screenshot}
+      \label{fig:ss3b}
+   \end{subfigure}
+   \caption{NES$\rightarrow$SNES Example 1}
+\end{figure}
+
+%% screenshot 4
+\begin{figure}[htp]
+   \centering
+   \begin{subfigure}[b]{0.235\textwidth}
+      \includegraphics[width=\textwidth]{figures/nes_to_snes/Ninja_Kun_-_Majou_no_Bouken_(J)__ucc__8_real_A.png}
+      \caption{Real NES Screenshot}
+      \label{fig:ss4a}
+   \end{subfigure}
+   \begin{subfigure}[b]{0.235\textwidth}
+      \includegraphics[width=\textwidth]{figures/nes_to_snes/Ninja_Kun_-_Majou_no_Bouken_(J)__ucc__8_fake_B.png	}
+      \caption{Fake SNES screenshot}
+      \label{fig:ss4b}
+   \end{subfigure}
+   \caption{NES$\rightarrow$SNES Example 1}
+\end{figure}
+
 
 %%%%%%%%% CONCLUSION
 \section{Conclusion}
