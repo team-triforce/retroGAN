@@ -87,7 +87,7 @@ We initially started by taking the driver code\footnote{https://github.com/junya
 
 Given the almost miraculous results in the literature that have been achieved using CycleGANs with unpaired datasets (and admittedly vast computing resources way beyond our reach), we were reasonably confident that we could use similar techniques to perform a non-trivial conversion between 8-bit and 16-bit screenshots of games. We expected the 16$\rightarrow$8-bit conversion to be much simpler than the 8$\rightarrow$16-bit conversion, but we were hopeful that we might be able to achieve at least some worthwhile results in the latter case.
 
-Our approach using the existing CycleGAN architecture with our custom dataset is unique and to our knowledge, no one has properly explored this type of translation.
+While the CycleGAN architecture has been used to solve many problems, our dataset is unique and to our knowledge, no other work has properly explored unpaired image-to-image translation in this domain.
 
 \textit{\textcolor{blue}{(5 points) What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?}}
 
@@ -146,11 +146,11 @@ Additionally, an \textit{identity loss} is used to provide color/hue stability. 
 
 \textit{\textcolor{blue}{(10 points) How did you measure success?}}
 
-The CycleGAN framework allowed for significant configurability of hyperparameters, and we took full advantage of the flexibility provided. As such, for our first pass success measure, we selected for the hyperparameters that showed the smallest amount of loss for at least \textit{one} direction of the cycle. This gave us a shortlist of candidates to examine that we evaluated manually to determine which to investigate further. One interesting (but not entirely unexpected) observation we found was that the cycle performance was not even; a set of hyperparameters that performed well for the NES$\rightarrow$SNES conversion would not necessarily perform well for the SNES$\rightarrow$NES conversion, and vice versa. 
+The CycleGAN framework allowed for significant configurability of hyperparameters, and we took full advantage of the flexibility provided. As such, for our first pass success measure, we selected for the hyperparameters that showed the smallest amount of loss for at least \textit{one} direction of the cycle. This gave us a shortlist of candidates to examine that we evaluated manually to determine which to investigate further. One interesting (but not entirely unexpected) observation we found was that the cycle performance was not even; a set of hyperparameters that performed well for the NES$\rightarrow$SNES conversion would not necessarily perform well for the SNES$\rightarrow$NES conversion, and vice versa.
 
-For each promising candidate set, we then ran a customized metric to evaluate the final images for their adherence to the hardware restrictions of each console. We produced several iterations of this metric, before finally settling on Algorithm \ref{alg:alg1}. 
+For each promising candidate set, we then ran a customized metric to evaluate the final images for their adherence to the hardware restrictions of each console. We produced several iterations of this metric, before finally settling on Algorithm \ref{alg:alg1}.
 
-This metric scores an image based on how closely the pixels match the target console palette modulated by the percentage of image pixels that match the target palette exactly. This modulation was necessary to compensate for the fact that the SNES palette has many more entries, and consequently, it was easier for the algorithm to score highly as any selected color was never too far away from a valid palette entry in RGB space. Although this metric does not capture 100\% of the intricacies of the NES and SNES screen palette restrictions, it does cover most situations that would occur. In any case, the ability to detect the outlier violations would require intrinsic knowledge of the programming of the particular game that had generated the screenshot, which is far beyond the scope of this paper.
+This metric scores an image based on how closely the pixels match the target console palette modulated by the percentage of image pixels that match the target palette exactly. This modulation was necessary to compensate for the fact that the SNES palette has many more entries, and consequently, it was easier for the algorithm to score highly as any selected color was never too far away from a valid palette entry in RGB space. A perfect metric of either system would require accounting for hundreds of variables(pixel limit, per-pixel color palette limits, transparency limitations, max sprites per screen, etc), however this would be a task outside the scope of this paper and would heavily depend on domain knowledge, so we chose a metric that focuses on color palette, as it's a much more tractable task and is a metric that could be adapted to consoles other than just the NES/SNES.
 
 In practice, we found that using the stricter NES metric produced more meaningful results; that is, for the SNES$\rightarrow$NES conversion, we found that measuring the increase in value for this metric between the real SNES and fake NES image was a strong indicator of success. Conversely, for the NES$\rightarrow$SNES conversion, the decrease in value of this metric was a good indicator of success.
 
@@ -181,17 +181,17 @@ In particular, figure \ref{fig:ss1b} seems to show that different conversion cri
    \begin{center}
       \begin{tabular}{|l|c|c|}
          \hline
-         Source SNES Image & Real  & Fake           \\
+         Source SNES Image & Real     & Fake     \\
          \hline\hline
-         Example 1 & $0.0449$  & $0.5190$           \\
-         Example 2  & $0.0171$ & $0.3330$           \\
+         Example 1         & $0.0449$ & $0.5190$ \\
+         Example 2         & $0.0171$ & $0.3330$ \\
          \hline
       \end{tabular}
    \end{center}
    \caption{SNES$\rightarrow$NES Results (NES Metric)}
    \label{tab:nesresults}
 \end{table}
-       
+
 
 \textbf{\textcolor{blue}{Important: This section should be rigorous and thorough. Present detailed information about decision you made, why you made them, and any evidence/experimentation to back them up. This is especially true if you leveraged existing architectures, pre-trained models, and code (i.e. do not just show results of fine-tuning a pre-trained model without any analysis, claims/evidence, and conclusions, as that tends to not make a strong project). }}
 
@@ -229,11 +229,11 @@ In particular, figure \ref{fig:ss1b} seems to show that different conversion cri
 
 \subsection{NES$\rightarrow$SNES Results}
 
-For the NES$\rightarrow$SNES conversion we performed an almost identical analysis. We selected several of the most aesthetically pleasing conversion images, and re-ran the stricter NES metric on both the real and fake images, as shown in table \ref{tab:snesresults}. 
+For the NES$\rightarrow$SNES conversion we performed an almost identical analysis. We selected several of the most aesthetically pleasing conversion images, and re-ran the stricter NES metric on both the real and fake images, as shown in table \ref{tab:snesresults}.
 
 \textcolor{red}{***HYPERPARAMETERS HERE}
 
-Although it is apparent that this leg of the conversion was not as successful as the reverse leg, it is still notable that the results show that some selective conversion has taken place. Notably, the results show that background areas tended to be lightened and blurred, bright spots tended to be blown out and made brighter, while areas of darker colors \--- particular those with black pixel outlines \--- tended to be left relatively untouched, implying that the network did at least extract some relevant feature information. 
+Although it is apparent that this leg of the conversion was not as successful as the reverse leg, it is still notable that the results show that some selective conversion has taken place. Notably, the results show that background areas tended to be lightened and blurred, bright spots tended to be blown out and made brighter, while areas of darker colors \--- particular those with black pixel outlines \--- tended to be left relatively untouched, implying that the network did at least extract some relevant feature information.
 
 \textcolor{red}{*** UNDERFITTING? NOT ENOUGH DATA?}
 
@@ -241,15 +241,15 @@ Although it is apparent that this leg of the conversion was not as successful as
    \begin{center}
       \begin{tabular}{|l|c|c|}
          \hline
-         Source NES Image & Real  & Fake           \\
+         Source NES Image & Real  & Fake     \\
          \hline\hline
-         Example 1 & $1.0$  & $0.0155$           \\
-         Example 2  & $1.0$ & $0.0157$           \\
+         Example 1        & $1.0$ & $0.0155$ \\
+         Example 2        & $1.0$ & $0.0157$ \\
          \hline
       \end{tabular}
    \end{center}
    \caption{NES$\rightarrow$SNES Results (NES Metric)}
-   \label{tab:snesresults1}
+   \label{tab:snesresults}
 \end{table}
 
 
@@ -293,7 +293,7 @@ The golden age of 8-bit and 16-bit pixel art is past but the need for generating
 
 To train the CycleGAN, we generated an unpaired dataset of NES and SNES screenshots. Multiple layers of image preprocessing and augmenting were implemented to improve its learning. The loss function was adequate to learn the image conversion; however, we needed to know how well it was learning the correct color palette as well, which forced us to engineer a unique scoring metric.
 
-As you can see from the results, retroGAN is quite effective at its job. Follow up work should include using our scoring metric as a loss function or scaling images up to 32 or 64-bit systems. 
+As you can see from the results, retroGAN is quite effective at its job. Follow up work should include using our scoring metric as a loss function or scaling images up to 32 or 64-bit systems.
 
 %-------------------------------------------------------------------------
 \section{Other Sections}
@@ -650,9 +650,9 @@ Due to the lack of any readily available datasets for SNES and NES image, we had
 This task was made more difficult due to the number of sources that do not have clean images (for example, badly scaled, artifact-laden and/or watermarked images).
 Ultimately, a web scraper was written that allowed us to extract screenshots from four separate websites: \url{https://mobygames.com}, \url{https://www.video-games-museum.com}, \url{https://superfamicom.org} and \url{https://archive.org}.
 
-Each of these sites had a wide variety of images that required various degrees of preprocessing. As such, the program performed cropping and rescaling as necessary, taking care to preserve pixel detail as much as possible. 
+Each of these sites had a wide variety of images that required various degrees of preprocessing. As such, the program performed cropping and rescaling as necessary, taking care to preserve pixel detail as much as possible.
 Next, any images for each console that had more colors than allowed were run through an auto-clustering algorithm to reduce the number of colors below the allowable threshold for that console.
-Finally, each image was then classified into one of three ``quality bands'' depending on the amount of pre-processing required and the fidelity of the final image. The best quality band was reserved for images that required no pre-processing or none other than cropping. The next quality band contained images that  required only cropping, color-correction and/or scaling by a factor of exactly $2\times$, and the final quality band contained images that required scaling of $2.5\times$ after cropping. Any images that did not fit into these three categories were discarded. 
+Finally, each image was then classified into one of three ``quality bands'' depending on the amount of pre-processing required and the fidelity of the final image. The best quality band was reserved for images that required no pre-processing or none other than cropping. The next quality band contained images that  required only cropping, color-correction and/or scaling by a factor of exactly $2\times$, and the final quality band contained images that required scaling of $2.5\times$ after cropping. Any images that did not fit into these three categories were discarded.
 
 After processing, the best quality band contained roughly $20,000$ images per console, with an overall total of $50,000+$ images per console across all three bands. Note that for the experiments in this paper, we used $2500$ from the best quality band due to training time constraints.
 
@@ -693,7 +693,7 @@ Pixel doubling was a special case of the inbuilt zoom augmentation of CycleGAN t
       \STATE $max\_rgb \leftarrow$ corners of RGB space for $(i, j, k) \in i=\{0,1\}, j=\{0,1\}, k=\{0,1\}$
       \STATE $m\_bias \leftarrow 1 / $number of colors in target console color palette
       \STATE $total\_score \leftarrow 0$
-      \STATE $num\_images \leftarrow $number of candidate images      
+      \STATE $num\_images \leftarrow $number of candidate images
       \STATE
       \FOR{each candidate image}
       \STATE $img\_rgb \leftarrow $ per pixel normalized RGB values
