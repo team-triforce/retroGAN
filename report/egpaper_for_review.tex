@@ -96,7 +96,7 @@ Conversely, in our situation, there are several palette restrictions that apply 
 \textbf{\textcolor{blue}{Important: Mention any code repositories (with citations) or other sources that you used, and specifically what changes you made to them for your project.}}
 
 \subsection{NES / SNES Palette Considerations}
-The NES palette comprises 56 fixed colors, whereas the SNES is more flexible with a full 15-bit RGB palette (with 5 bits for each of the red, green and blue channels), as shown in \ref{fig:nes} and \ref{fig:snes} respectively.
+The NES palette comprises 56 fixed colors, whereas the SNES is more flexible with a full 15-bit RGB palette (with 5 bits for each of the red, green and blue channels), as shown in Figures \ref{fig:nes} and \ref{fig:snes} respectively.
 
 As previously mentioned, there are some additional restrictions to how these colors can be used, but we do not cover them here; they are of more concern to emulator writers, and it was hoped that \--- given enough data \--- the CycleGAN would be able to figure these out for itself.
 
@@ -118,16 +118,16 @@ As such, for an effective conversion, the GAN must learn to be conform to each p
 \end{figure}
 
 \subsection{Generative Models and CycleGANs}
-For our main architecture, we chose the CycleGAN architecture for the many positives it brings. First, being a Generative Model, it brings us the ability to generate new models via sampling from our implicit density estimation. On top of that, we also were drawn by the advantages of specifically Generative Adversarial Networks(GANs)\cite{GAN}. GANs provide several benefits over other generative models, including not needing labeled data as GANs are unsupervised. They are also flexible on the types of data they ingest. Most importantly, since they sample from their density instead of doing any kind of averaging, GANs result in the sharpest images over other generative models. This is a very important property as retro graphics involve small, sharp pixel placement which makes this a vital quality for this dataset.
+For our main architecture, we chose CycleGAN for the many positives it brings. First, being a Generative Model, it brings us the ability to generate new models via sampling from our implicit density estimation. On top of that, we also were drawn by the advantages of specifically Generative Adversarial Networks(GANs)\cite{GAN}. GANs provide several benefits over other generative models, including not needing labeled data as GANs are unsupervised. They are also flexible on the types of data they ingest. Most importantly, since they sample from their density instead of doing any kind of averaging, GANs result in the sharpest images over other generative models. This is a very important property as retro graphics involve small, sharp pixel placement which makes this a vital quality for this dataset.
 
-Finally, we chose the specific framework of CycleGAN\cite{CycleGAN}, as it provides the ability to translate between two datasets without the need for paired images. Instead of the usual GAN architecture of a single generator and discriminator, the CycleGAN architecture uses mappings: $G$ and $F$ with the goal of having $G$ learn a mapping from domain $X \rightarrow Y$ such that $G(X)$ is indistinguishable from the distribution $Y$ using adversarial loss. However, due to the low constraints of unpaired data, a second, inverse mapping $F: Y \rightarrow X$ is created to induce a cycle consistency loss to push $F(G(X)) \approx X$, as shown:
+Finally, we chose CycleGAN\cite{CycleGAN}, as it provides the ability to translate between two datasets without the need for paired images. Instead of the usual GAN architecture of a single generator and discriminator, the CycleGAN architecture uses mappings: $G$ and $F$ with the goal of having $G$ learn a mapping from domain $X \rightarrow Y$ such that $G(X)$ is indistinguishable from the distribution $Y$ using adversarial loss. However, due to the low constraints of unpaired data, a second, inverse mapping $F: Y \rightarrow X$ is created to induce a cycle consistency loss to push $F(G(X)) \approx X$, as shown:
 \begin{equation*}
    G: X \rightarrow Y, F: Y \rightarrow X : F(G(X)) \approx X
 \end{equation*}
 
 These mappings are combined with two \textit{cycle consistency losses} that can capture the intuition that translating from one domain to another and back again should result to something similar to the original input.
 
-Additionally, an \textit{identity loss} is used to provide color/hue stability. This is defined as $F(X) \approx X$ and $G(Y) \approx Y$. The identity loss is combined with the \textit{cycle consistency loss} proportionally as determined by a bias hyperparameter.
+Additionally, an \textit{identity loss} is used to provide color/hue stability. This is defined as $F(X) \approx X$ and $G(Y) \approx Y$. The \textit{identity loss} is combined with the \textit{cycle consistency loss} proportionally as determined by a bias hyperparameter.
 
 
 \begin{figure}[H]
@@ -142,13 +142,17 @@ The capabilities of GANs combined with the new flexibility of CycleGANs to allow
 
 \textit{\textcolor{blue}{(10 points) How did you measure success?}}
 
-The CycleGAN framework allowed for significant configurability of hyperparameters, and we took full advantage of the flexibility provided. As such, for our first pass success measure, we selected for the hyperparameters that showed the smallest amount of loss for at least \textit{one} direction of the cycle. This gave us a shortlist of candidates to examine that we evaluated manually to determine which to investigate further. One interesting (but not entirely unexpected) observation we found was that the cycle performance was not even; a set of hyperparameters that performed well for the NES$\rightarrow$SNES conversion would not necessarily perform well for the SNES$\rightarrow$NES conversion, and vice versa.
+The CycleGAN framework allowed for significant configurability of hyperparameters, and we took full advantage of the flexibility provided. As such, for our first pass success measure, we selected for the hyperparameters that showed the smallest amount of loss for at least \textit{one} direction of the cycle. This gave us a shortlist of candidates to examine that we evaluated manually to determine which to investigate further. One interesting (but not entirely unexpected) observation we found was that the cycle performance was not even; a set of hyperparameters that performed well for the NES$\rightarrow$SNES conversion would not necessarily perform well for the SNES$\rightarrow$NES conversion, and vice versa. 
 
-For each promising candidate set, we then ran a customized metric to evaluate the final images for their adherence to the hardware restrictions of each console. We produced several iterations of this metric, before finally settling on Algorithm \ref{alg:alg1}. This metric scores an image based on how closely the pixels match the target console palette modulated by the percentage of image pixels that match the target palette exactly. This modulation was necessary to compensate for the fact that the SNES palette has many more entries, and consequently, it was easier for the algorithm to score highly as any selected color was never too far away from a valid palette entry in RGB space.
+For each promising candidate set, we then ran a customized metric to evaluate the final images for their adherence to the hardware restrictions of each console. We produced several iterations of this metric, before finally settling on Algorithm \ref{alg:alg1}. This metric scores an image based on how closely the pixels match the target console palette modulated by the percentage of image pixels that match the target palette exactly. This modulation was necessary to compensate for the fact that the SNES palette has many more entries, and consequently, it was easier for the algorithm to score highly as any selected color was never too far away from a valid palette entry in RGB space. Although this metric does not capture 100\% of the intricacies of the NES and SNES screen palette restrictions, it does cover most situations that would occur. In any case, the ability to detect the outlier violations would require intrinsic knowledge of the programming of the particular game that had generated the screenshot, which is far beyond the scope of this paper.
 
 Note that this was applied as a post-training evaluation metric. An idea for future work would be to implement this metric as part of the loss function; unfortunately, time constraints prevented us from performing this investigation ourselves.
 
-\textit{\textcolor{blue}{What experiments were used? What were the results, both quantitative and qualitative? Did you succeed? Did you fail? Why? Justify your reasons with arguments supported by evidence and data.}}
+\textit{\textcolor{blue}{What experiments were used?}}
+
+Using the hyperparameter search driver, each of the three authors ran a random hyperparameter search using the time available; once this was complete we first compared our results by the metric described above, selecting a shortlist of best candidates. We considered each direction of the cycle separately for the reasons mentioned previously. For each candidate, we performed a visual inspection of the output and reached a consensus on which of these had generated the best overall results. The final candidate from each cycle direction was then used to generate the images and graphs in the following sections.
+
+\textit{\textcolor{blue}{What were the results, both quantitative and qualitative? Did you succeed? Did you fail? Why? Justify your reasons with arguments supported by evidence and data.}}
 
 Should probably save this entire section for after we've established our final metrics and have screenshots to show.
 
