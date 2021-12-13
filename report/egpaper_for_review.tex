@@ -25,7 +25,7 @@
 \def\httilde{\mbox{\tt\raisebox{-.5ex}{\symbol{126}}}}
 
 % Pages are numbered in submission mode, and unnumbered in camera-ready
-%\ifcvprfinal\pagestyle{empty}\fi
+% \ifcvprfinal\pagestyle{empty}\fi
 \begin{document}
 
 %%%%%%%%% TITLE
@@ -153,6 +153,15 @@ Note that this was applied as a post-training evaluation metric. An idea for fut
 Should probably save this entire section for after we've established our final metrics and have screenshots to show.
 
 \textbf{Important: This section should be rigorous and thorough. Present detailed information about decision you made, why you made them, and any evidence/experimentation to back them up. This is especially true if you leveraged existing architectures, pre-trained models, and code (i.e. do not just show results of fine-tuning a pre-trained model without any analysis, claims/evidence, and conclusions, as that tends to not make a strong project). }
+
+%%%%%%%%% CONCLUSION
+\section{Conclusion}
+
+The golden age of 8-bit and 16-bit pixel art is past but the need for generating this type of graphic is ever-present. To this end we developed retroGAN, an implementation of CycleGAN. Its purpose is to up-convert NES to SNES images and down-convert SNES to NES images.
+
+To train the CycleGAN, we generated an unpaired dataset of NES and SNES screenshots. Multiple layers of image preprocessing and augmenting were implemented to improve its learning. The loss function was adequate to learn the image conversion; however, we needed to know how well it was learning the correct color palette as well, which forced us to engineer a unique scoring metric.
+
+As you can see from the results, retroGAN is quite effective at its job. Follow up work should include using our scoring metric as a loss function or scaling images up to 32 or 64-bit systems. 
 
 %-------------------------------------------------------------------------
 \section{Other Sections}
