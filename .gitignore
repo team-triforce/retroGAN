@@ -50,6 +50,8 @@ report/*
 !report/*.bst
 !report/figures
 !report/figures/*.png
+!report/figures/nes_to_snes/*.png
+!report/figures/snes_to_nes/*.png
 
 
 # .idea
