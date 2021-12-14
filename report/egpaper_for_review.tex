@@ -83,7 +83,7 @@ Datasets for NES/SNES images did not exist in a suitable form, so we created our
 
 We attempted to implement translation between video game images from different generations. The primary problem was a lack of paired image data (an image from each generation) since each console generation consists almost solely of different games (with a small number of remakes). We thought CycleGAN had the potential to be a solution as it doesn't require paired data due to the cyclic process for training. That is, a NES image can be converted to a SNES fake by one leg of the cycle, and then the SNES fake can be converted back to a NES ``fake fake'' by the reverse leg. Then the round-trip images (the NES original and its doubly-converted ``fake fake'') can be compared for differences. In an ideal system, the real image and the ``fake fake'' image would be virtually identical. Both directions of the conversion process (NES$\rightarrow$SNES and SNES$\rightarrow$NES) can be cross-checked in this fashion.
 
-We initially started by taking the driver code\footnote{https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix, Commit Id 00d5574908eb66fe0127b32d7b030001453f21d0} for the original CycleGAN paper \cite{CycleGAN}. We then removed all of the code not directly related to the CycleGAN model and added our own datasets, pre-processing, augmentation, hyper-parameter tuning code, and metrics.
+We initially started by taking the driver code\footnote{https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix, Commit Id 00d5574908eb66fe0127b32d7b030001453f21d0} for the original CycleGAN paper \cite{CycleGAN}, implemented in Python with PyTorch. We then removed all of the code not directly related to the CycleGAN model and added our own datasets, pre-processing, augmentation, hyper-parameter tuning code, and metrics.
 
 Given the almost miraculous results in the literature that have been achieved using CycleGANs with unpaired datasets (and admittedly vast computing resources way beyond our reach), we were reasonably confident that we could use similar techniques to perform a non-trivial conversion between 8-bit and 16-bit screenshots of games. We expected the 16$\rightarrow$8-bit conversion to be much simpler than the 8$\rightarrow$16-bit conversion, but we were hopeful that we might be able to achieve at least some worthwhile results in the latter case.
 
@@ -140,9 +140,6 @@ Additionally, an \textit{identity loss} is used to provide color/hue stability. 
    \caption{CycleGAN Architecture}
 \end{figure}
 
-\textcolor{red}{*** NEED A LITTLE BIT ABOUT RESNET AND UNET HERE?}
-\textcolor{darkgreen}{For this, I say just mention that various architectures were in our hyperparams(list them if you want), since we will give the images in the HP sections I think you just need to briefly talk about how we can swap them out.}
-
 
 \section{Experiments and Results}
 
@@ -168,9 +165,6 @@ Using the hyperparameter search driver, each of the three authors ran a random h
 
 As expected, the SNES$\rightarrow$NES conversion proved to be the most effective cycle leg. For a training group size of 2500 images from the best quality band, the averaged NES metric was $0.9848$, indicating that across all of the training images, roughly 98\% of the pixels conformed to the NES palette.
 
-
-\textcolor{red}{***HYPERPARAMETERS HERE}
-\textcolor{darkgreen} {Include the non-defaults in a simple table, include an image of the resnet\_9 architecture, and put the total number of trained parameters in the caption for it}
 
 We selected several of the most aesthetically pleasing conversion images, and re-ran the NES metric on both the real and fake images, as shown in table \ref{tab:nesresults}.
 These results show that, while there was definite improvement, and hence learning, the network was unable to score the same metric as the training set. For a dataset size of 2500 (with a 90/10 train/test split), the averaged SNES metric was $0.6382$, indicating that across all of the training images, roughly 64\% of the pixels conformed to the NES palette. The specific dataset size was chosen due to training time constraints.
@@ -203,19 +197,26 @@ These results were generated using the hyperparameters shown in table \ref{tab:s
          \hline
                   GAN Mode     & lsgan\\
          \hline
-         netG       & resnet\_9  \\ 
+         netG       & unet\_128  \\ 
          \hline
          Pre-process     & pixel double and crop \\
          \hline
       \end{tabular}
    \end{center}
-   \caption{SNES$\rightarrow$NES Hyperparameters TODO}
+   \caption{SNES$\rightarrow$NES Hyperparameters}
    \label{tab:neshyperparameters}
 \end{table}
 
-The generator network used a 9-block ResNet architecture internally, and the discriminator network used the default basic architecture. Figure \ref{fig:unet} shows the general structure of a ResNet architecture\footnote{Adapted from \url{https://journals.plos.org/plosone/article/figure?id=10.1371/journal.pone.0249196.g006}}. The generator had $11.383 \times 10^6$ trainable parameters and the discriminator had $2.766 \times 10^6$.
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=0.475\textwidth]{figures/graphs/train_graph_nes.png}
+   \caption{Training Graph with best SNES$\rightarrow$NES results}
+   \label{fig:nesgraph}
+\end{figure}
 
-\textcolor{red} {*** WE NEED TO DESCRIBE LSGAN and BASIC}
+The generator network used a U-Net 128 architecture internally, and the discriminator network used the default basic architecture. Figure \ref{fig:unet} shows the general structure of a U-Net architecture\footnote{Adapted from \url{https://github.com/matthias-wright/cifar10-resnet}}. The generator had $41.829 \times 10^6$ trainable parameters and the discriminator had $2.766 \times 10^6$.
+The ``least squares'' loss function was used by the discriminator (as determined by the \textit{lsgan} hyperparameter choice for GAN Mode.
+%  41.829
 
 \begin{figure}[H]
    \centering
@@ -308,14 +309,14 @@ These results were generated using the hyperparameters shown in table \ref{tab:s
 
 \begin{figure}[H]
    \centering
-   \includegraphics[width=0.475\textwidth]{figures/graphs/83e6736fd3e445ed9264e6d64a766939_train_graph.png}
+   \includegraphics[width=0.475\textwidth]{figures/graphs/train_graph_snes.png}
    \caption{Training Graph with best NES$\rightarrow$SNES results.}
    \label{fig:snesgraph}
 \end{figure}
 
 The generator network used a 9-block ResNet architecture internally, and the discriminator network used the default basic architecture. Figure \ref{fig:resnet} shows the general structure of a ResNet architecture\footnote{Adapted from \url{https://github.com/matthias-wright/cifar10-resnet}}. The generator had $11.383 \times 10^6$ trainable parameters and the discriminator had $2.766 \times 10^6$.
-
-\textcolor{red} {*** WE NEED TO DESCRIBE LSGAN and BASIC}
+The ``least squares'' loss function was used by the discriminator (as determined by the \textit{lsgan} hyperparameter selection for GAN Mode.
+%  41.829
 
 \begin{figure}[H]
    \centering
@@ -363,7 +364,7 @@ Although it is apparent that this leg of the conversion was not as successful as
 \textcolor{darkgreen} {I think just focus on not enough data, nothing too crazy.}
 
 %%%%%%%%% CONCLUSION
-\section{Conclusion}
+\section{Conclusion And Future Work}
 
 Our results show that despite the complications, some promising results emerged from our experiments. As expected, the results for the SNES$\rightarrow$NES conversion were better than the NES$\rightarrow$SNES due to the comparative simplicity of a down-conversion (where information loss isn't necessarily a problem) versus up-conversion, where information has to be synthesized from learned experience.
 
@@ -375,8 +376,16 @@ Examples of possible future work could include video-based training, using pixel
 
 Additional follow up work could include improvements to the scoring metrics to take into account the additional hardware restrictions, as well as the incorporation of the metrics into the respective loss functions.
 
+Future work could also focus on expanding the consoles that the framework supports. For example, mapping from 16-bit to 32-bit or even mapping larger jumps from 16-bit to 64-bit. There would be added complexity to this, which may result in needing larger training sets or alternate loss functions.
+
+Alternate loss functions in particular are an interesting area for further research. The CycleGAN architecture was built for the general problem on mapping images from one domain to another. However, for the specific problem of mapping images from one console generation to another, loss functions could be more precise. Others could research using the loss function to additionally model the console's graphical constraints, learning the exact color palette of each console generation.
+
+In the short term, given more time, we would have liked to have explored the possibility of enforcing some of the palette constraints (particularly for the SNES$\rightarrow$NES conversion) by modifying the output layer of the GAN so that, for example, each pixel in the output image was represented by a one-hot encoded palette entry. This would have resulted in an output layer of size $56\times256\times256\approx3.67\times10^6$ parameters, and would have ensured palette adherence, but may well have been significantly harder to train. This implementation would not have been feasible for the SNES, because it would have required approximately $2.147\times10^9$ parameters in the final layer.
+
+Another area that we were unable to investigate due to time constraints was the idea of sequentially training the network with successive datasets; starting from a small and clean set and increasing in noise and size. This has been shown in the literature to help improve learning and generalization in some cases.
+
 %-------------------------------------------------------------------------
-\section{Other Sections}
+\section{STILL TODO}
 %
 %\textit{\textcolor{blue}{You are welcome to introduce additional sections or subsections, if required, to address the following questions in detail.}}
 %
@@ -392,7 +401,7 @@ Additional follow up work could include improvements to the scoring metrics to t
 
 \textit{\textcolor{blue}{(5 points) Finally, points will be distributed based on your understanding of how your project relates to Deep Learning. Here are some questions to think about:}}
 
-\textcolor{darkgreen}{Just need to include the two architectures used in our main runs, give our total \# of parameters in their captions, and give some brief analysis tying them into the experiments and this is done.}
+\textcolor{darkgreen}{Just need to include the two architectures used in our main runs, give our total \# of parameters in their captions, \textcolor{red}{and give some brief analysis tying them into the experiments and this is done.}}
 
 %\textit{\textcolor{blue}{What was the structure of your problem? How did the structure of your model reflect the structure of your problem?}}
 %
@@ -400,53 +409,48 @@ Additional follow up work could include improvements to the scoring metrics to t
 
 \textit{\textcolor{blue}{What parts of your model had learned parameters (e.g., convolution layers) and what parts did not (e.g., post-processing classifier probabilities into decisions)? }}
 
-\textcolor{darkgreen}{Just briefly talk about how resnes9 and unet work and where their trainable parameters are. If we wanted to talk about stuff that doesn't have parameters, we could talk about the metric calculation or something?}
+\textcolor{red}{Just briefly talk about how resnet9 and unet work and where their trainable parameters are. If we wanted to talk about stuff that doesn't have parameters, we could talk about the metric calculation or something?}
 
 %\textit{\textcolor{blue}{What representations of input and output did the neural network expect? How was the data pre/post-processed?}}
 %
 %\textcolor{darkgreen}{I think this is more than covered with the pre-processing section (wherever we include that)}
 
-\textit{\textcolor{blue}{What was the loss function?}}
-
-\textcolor{darkgreen}{I mention how the loss works in the cycleGAN paper, but we could mention that it uses MSE loss in the experiments section if we wanted to be super specific?}
+%\textit{\textcolor{blue}{What was the loss function?}}
+%
+%\textcolor{darkgreen}{I mention how the loss works in the cycleGAN paper, but we could mention that it uses MSE loss in the experiments section if we wanted to be super specific?}
 
 %\textit{\textcolor{blue}{Did the model overfit? How well did the approach generalize?}}
 %
 %\textcolor{darkgreen}{I'll cover overfitting in the snes$->$nes section}
 
-\textit{\textcolor{blue}{What hyperparameters did the model have? How were they chosen? How did they affect performance? What optimizer was used?}}
+%\textit{\textcolor{blue}{What hyperparameters did the model have? How were they chosen? How did they affect performance? What optimizer was used?}}
+%
+%\textcolor{darkgreen}{I'm not sure how much more detail we need, we'll be listing the HPs we've changed. Up to you Andrew if you want more details but I think when we post our HPs and architectures we're mostly fine on this one.}
 
-\textcolor{darkgreen}{I'm not sure how much more detail we need, we'll be listing the HPs we've changed. Up to you Andrew if you want more details but I think when we post our HPs and architectures we're mostly fine on this one.}
+%TODO: Add in the hyperparameters we ended up using.
 
-TODO: Add in the hyperparameters we ended up using.
-
-\textit{\textcolor{blue}{What Deep Learning framework did you use?}}
-
-\textcolor{darkgreen}{We do briefly mention pytorch in random places but we could add it in the intro/approach somewhere}
+%\textit{\textcolor{blue}{What Deep Learning framework did you use?}}
+%
+%\textcolor{darkgreen}{We do briefly mention pytorch in random places but we could add it in the intro/approach somewhere}
 
 %\textit{\textcolor{blue}{What existing code or models did you start with and what did those starting points provide?}}
 %
 %\textcolor{darkgreen}{I think this is totally covered in the CycleGAN section.}
 
-\textit{\textcolor{blue}{Briefly discuss potential future work that the research community could focus on to make improvements in the direction of your project's topic.}}
-
-\textcolor{darkgreen}{I'll leave the notes below on this one: We should probably just throw this in the conclusion if we still want to work on this.}
-
-This is an interesting one, we could talk about using sprites, more data, other consoles, using the metrics we made with loss, all sorts of stuff.
-
-Additional work could focus on expanding the consoles that the framework could work on. For example, mapping from 16-bit to 32-bit or even mapping larger jumps from 16-bit to 64-bit. There would be added complexity to this, which may result in needing larger training sets or alternate loss functions.
-
-Alternate loss functions in particular are an interesting area for further research. The CycleGAN architecture was built for the general problem on mapping images from one domain to another. However, for the specific problem of mapping images from one console generation to another, loss functions could be more precise. Others could research using the loss function to additionally model the console's graphical constraints, learning the exact color palette of each console generation.
+%\textit{\textcolor{blue}{Briefly discuss potential future work that the research community could focus on to make improvements in the direction of your project's topic.}}
+%
+%\textcolor{darkgreen}{I'll leave the notes below on this one: We should probably just throw this in the conclusion if we still want to work on this.}
+%
+%This is an interesting one, we could talk about using sprites, more data, other consoles, using the metrics we made with loss, all sorts of stuff.
 
 %-------------------------------------------------------------------------
 
-\section{Work Division}
-\textcolor{darkgreen}{Do we need to update these at all?}
+%\section{Work Division}
+%\textcolor{darkgreen}{Do we need to update these at all?}
 
 %\textit{\textcolor{blue}{Please add a section on the delegation of work among team members at the end of the report, in the form of a table and paragraph description. This and references do \textbf{NOT} count towards your page limit. An example has been provided in Table \ref{tab:contributions}.}}
-
-\newpage
-\newpage
+%
+%\newpage
 
 %------------------------------------------------------------------------
 \section{Appendixes}
