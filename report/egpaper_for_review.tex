@@ -176,8 +176,9 @@ These results show that, while there was definite improvement, and hence learnin
 Despite the lower metric score, a visual examination of the results in figures \ref{fig:ss1a} and \ref{fig:ss1b} show that the fake image is clearly closer to the target aesthetic, and the conversion process appears to be more involved than a simple palette conversion.
 In particular, figure \ref{fig:ss1b} seems to show that different conversion criteria have been applied to different areas of the image. If one compares the lower left brighter green area in figure \ref{fig:ss2a} with the similar intensity green area just right of center, it appears that the lower left area is rendered brighter in \ref{fig:ss2b} than the right of center area, even though the same areas in the source image are of similar intensity.
 
-\textcolor{red}{*** OVERFITTING? NOT ENOUGH DATA?}
-\textcolor{darkgreen} {I think this is probably overfitting our color metric since we chose the "best" run on it, I'll cover this}
+Overall these results are promising, although they are far from perfect. Since we're using an imperfect metric, the fact that we chose our final network based on the performance of that metric is inducing some level of bias towards color. As we stated before, to truly represent a NES game requires accounting for many additional constraints beyond color. However, since that isn't a tractable metric we can create and our metric is centered only on color, it's reasonable that the network is prone to overfitting color at the cost of other features not reliant on color palette.
+
+There is evidence that the network is learning beyond color though, as \ref{fig:ss2a} shows that the NES conversion removed the foggy backdrop of the original image. This is very important, as drawing a foggy background in this example was mostly likely done using transparency on the SNES, which is something that the NES can't replicate as it didn't have enough spare memory to allow for it. This is evidence that the model was able to account beyond replicating the color palette and started understanding from NES data that effects like transparency aren't possible.
 
 \begin{table}
    \begin{center}
