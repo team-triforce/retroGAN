@@ -141,7 +141,7 @@ Additionally, an \textit{identity loss} is used to provide color/hue stability. 
 \end{figure}
 
 \textcolor{red}{*** NEED A LITTLE BIT ABOUT RESNET AND UNET HERE?}
-
+\textcolor{darkgreen}{For this, I say just mention that various architectures were in our hyperparams(list them if you want), since we will give the images in the HP sections I think you just need to briefly talk about how we can swap them out.}
 \section{Experiments and Results}
 
 \textit{\textcolor{blue}{(10 points) How did you measure success?}}
@@ -168,6 +168,7 @@ As expected, the SNES$\rightarrow$NES conversion proved to be the most effective
 
 
 \textcolor{red}{***HYPERPARAMETERS HERE}
+\textcolor{darkgreen} {Include the non-defaults in a simple table, include an image of the resnet\_9 architecture, and put the total number of trained parameters in the caption for it}
 
 We selected several of the most aesthetically pleasing conversion images, and re-ran the NES metric on both the real and fake images, as shown in table \ref{tab:nesresults}.
 These results show that, while there was definite improvement, and hence learning, the network was unable to score the same metric as the training set. For a dataset size of 2500 (with a 90/10 train/test split), the averaged SNES metric was $0.6382$, indicating that across all of the training images, roughly 64\% of the pixels conformed to the NES palette. The specific dataset size was chosen due to training time constraints.
@@ -176,6 +177,7 @@ Despite the lower metric score, a visual examination of the results in figures \
 In particular, figure \ref{fig:ss1b} seems to show that different conversion criteria have been applied to different areas of the image. If one compares the lower left brighter green area in figure \ref{fig:ss1a} with the similar intensity green area just right of center, it appears that the lower left area is rendered brighter in \ref{fig:ss1b} than the right of center area, even though the same areas in the source image are of similar intensity.
 
 \textcolor{red}{*** OVERFITTING? NOT ENOUGH DATA?}
+\textcolor{darkgreen} {I think this is probably over-fitting our color metric since we chose the "best" run on it, I'll cover this}
 
 \begin{table}
    \begin{center}
@@ -232,10 +234,12 @@ In particular, figure \ref{fig:ss1b} seems to show that different conversion cri
 For the NES$\rightarrow$SNES conversion we performed an almost identical analysis. We selected several of the most aesthetically pleasing conversion images, and re-ran the stricter NES metric on both the real and fake images, as shown in table \ref{tab:snesresults}.
 
 \textcolor{red}{***HYPERPARAMETERS HERE}
+\textcolor{darkgreen} {Include the non-defaults in a simple table, include an image of the unet\_128 architecture, and put the total number of trained parameters in the caption for it}
 
 Although it is apparent that this leg of the conversion was not as successful as the reverse leg, it is still notable that the results show that some selective conversion has taken place. Notably, the results show that background areas tended to be lightened and blurred, bright spots tended to be blown out and made brighter, while areas of darker colors \--- particular those with black pixel outlines \--- tended to be left relatively untouched, implying that the network did at least extract some relevant feature information.
 
 \textcolor{red}{*** UNDERFITTING? NOT ENOUGH DATA?}
+\textcolor{darkgreen} {I think just focus on not enough data, nothing too crazy.}
 
 \begin{table}
    \begin{center}
@@ -304,55 +308,57 @@ Examples of possible future work could include video-based training, using pixel
 
 \textit{\textcolor{blue}{You are welcome to introduce additional sections or subsections, if required, to address the following questions in detail.}}
 
+\textcolor{darkgreen}{I think we've added all the sections/sub-sections we need}
+
 \textit{\textcolor{blue}{(5 points) Appropriate use of figures / tables / visualizations. Are the ideas presented with appropriate illustration? Are the results presented clearly; are the important differences illustrated?}}
 
-This seems like free points, just properly caption tables and figures. We just need to make sure when we're showing before-after images to make sure we show the metric improving and talk about it in analysis.
+\textcolor{darkgreen}{Done. All tables are great.}
 
 \textit{\textcolor{blue}{(5 points) Overall clarity. Is the manuscript self-contained? Can a peer who has also taken Deep Learning understand all of the points addressed above? Is sufficient detail provided?}}
 
-This seems like free points. We probably just need to briefly tough on GANs and give a proper section on how CycleGANs work, as well as some detail between NES and SNES color palettes.
+\textcolor{darkgreen}{Done. The paper is perfectly clear. I assume the reader knows about GANs but we explain CycleGANs and everything else is easy enough.}
 
 \textit{\textcolor{blue}{(5 points) Finally, points will be distributed based on your understanding of how your project relates to Deep Learning. Here are some questions to think about:}}
 
-This also seems free. We should probably go into the architecture of each GAN just so we can estimate how many parameters we have. (should probably wait until final HPs are done)
+\textcolor{darkgreen}{Just need to include the two architectures used in our main runs, give our total \# of parameters in their captions, and give some brief analysis tying them into the experiments and this is done.}
 
 \textit{\textcolor{blue}{What was the structure of your problem? How did the structure of your model reflect the structure of your problem?}}
 
-Our problem had two main pieces, a set of NES images and a set of SNES images, without a successful way to map from one domain to the other. The CycleGAN model fit our needs perfectly. Since it is composed of two GANs and two discriminators, it learned a mapping between domains.
+\textcolor{darkgreen}{I think this is easily covered in the CycleGAN section, talking about how the architecture addresses unpaired images.}
 
 \textit{\textcolor{blue}{What parts of your model had learned parameters (e.g., convolution layers) and what parts did not (e.g., post-processing classifier probabilities into decisions)? }}
 
-Both GANs and discriminators had learned parameters. The model trained one GAN to make NES images and the other to make SNES images while the two discriminators were trained to detect real and fake NES and SNES images, respectively.
+\textcolor{darkgreen}{Just briefly talk about how resnes9 and unet work and where their trainable parameters are. If we wanted to talk about stuff that doesn't have parameters, we could talk about the metric calculation or something?}
 
 \textit{\textcolor{blue}{What representations of input and output did the neural network expect? How was the data pre/post-processed?}}
 
-This is \textcolor{red}{Andrew}'s section. Should talk about the pre-processing we did.
+\textcolor{darkgreen}{I think this is more than covered with the pre-processing section (wherever we include that)}
 
 \textit{\textcolor{blue}{What was the loss function?}}
 
-TODO: Depends on best one picked via hyperparameter. We might want to mention the losers in passing.
+\textcolor{darkgreen}{I mention how the loss works in the cycleGAN paper, but we could mention that it uses MSE loss in the experiments section if we wanted to be super specific?}
 
 \textit{\textcolor{blue}{Did the model overfit? How well did the approach generalize?}}
 
-This is probably a good way to talk about our augmentation and how it helps with over-fitting.
+\textcolor{darkgreen}{I'll cover overfitting in the snes$->$nes section}
 
 \textit{\textcolor{blue}{What hyperparameters did the model have? How were they chosen? How did they affect performance? What optimizer was used?}}
 
-The original CycleGAN architecture did not have a method for finding the best hyperparameters. We built a wrapper around the train function that allowed us to randomize the available hyperparameters and run multiple training iterations, evaluating each one and retaining the best performing.
+\textcolor{darkgreen}{I'm not sure how much more detail we need, we'll be listing the HPs we've changed. Up to you Andrew if you want more details but I think when we post our HPs and architectures we're mostly fine on this one.}
 
 TODO: Add in the hyperparameters we ended up using.
 
 \textit{\textcolor{blue}{What Deep Learning framework did you use?}}
 
-PyTorch
+\textcolor{darkgreen}{We do briefly mention pytorch in random places but we could add it in the intro/approach somewhere}
 
 \textit{\textcolor{blue}{What existing code or models did you start with and what did those starting points provide?}}
 
-We used a CycleGAN framework, which is composed of two GANs and two discriminators. The first GAN generates an image, which is passed to the first discriminator, making a prediction on whether the image received is real or fake. The image is then passed to a second GAN, which tries to remake the original image. The output is then passed to a second discriminator, which evaluates whether it received a real or fake image.
-
-The framework provided a first pass implementation for us, giving time to align the framework to our specific problem.
+\textcolor{darkgreen}{I think this is totally covered in the CycleGAN section.}
 
 \textit{\textcolor{blue}{Briefly discuss potential future work that the research community could focus on to make improvements in the direction of your project's topic.}}
+
+\textcolor{darkgreen}{I'll leave the notes below on this one: We should probably just throw this in the conclusion if we still want to work on this.}
 
 This is an interesting one, we could talk about using sprites, more data, other consoles, using the metrics we made with loss, all sorts of stuff.
 
@@ -363,6 +369,7 @@ Alternate loss functions in particular are an intersting area for further resear
 %-------------------------------------------------------------------------
 
 \section{Work Division}
+\textcolor{darkgreen}{Do we need to update these at all?}
 
 \textit{\textcolor{blue}{Please add a section on the delegation of work among team members at the end of the report, in the form of a table and paragraph description. This and references do \textbf{NOT} count towards your page limit. An example has been provided in Table \ref{tab:contributions}.}}
 
