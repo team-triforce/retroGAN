@@ -56,22 +56,22 @@ Georgia Institute of Technology\\
 
 %%%%%%%%% BODY TEXT
 \section{Introduction/Background/Motivation}
-\textit{\textcolor{blue}{(5 points) What did you try to do? What problem did you try to solve? Articulate your objectives using absolutely no jargon.}}
+%\textit{\textcolor{blue}{(5 points) What did you try to do? What problem did you try to solve? Articulate your objectives using absolutely no jargon.}}
 
 In the 1980s, 8-bit consoles were king. These were characterized by limited color palettes and relatively simple 2D graphics. In the 1990s, 16-bit consoles took over and offered increased power, color palettes and the ability to display more complex graphics.\\
 Despite huge advances in technology, retro-games from the 8- and 16-bit eras remain popular, as evidenced by the number of remakes, emulators, modern ``Indie'' games using pixel art and even specialist magazines dedicating to retro gaming.\\
 Our experiment is based on the observation that the primary difference between 8- and 16-bit games (as exemplified by the NES and SNES, respectively) was in the fidelity of the graphics. Additionally, many of the graphical remasters today view the 16-bit era as the gold standard in pixel-based artwork, given that the graphical capabilities of the SNES still allowed artists to express themselves far more than the limited NES.\\
 Our primary objective is to train two systems, one that can take in an 8-bit NES graphic and ``up-convert'' it to a realistic 16-bit version and another system that can take in a 16-bit SNES graphic and ``down-convert'' it to a realistic 8-bit version.
 
-\textit{\textcolor{blue}{(5 points) How is it done today, and what are the limits of current practice?}}
+%\textit{\textcolor{blue}{(5 points) How is it done today, and what are the limits of current practice?}}
 
 Another area of interest is in software emulators that are often used to breathe life into older games. For example, the Nintendo Switch provides a paid emulation service that allows players to access a library of older games. In some cases, the emulators provide graphical filters that allow the appearance of the game to be altered (e.g. a CRT filter, or a resolution up-scaling filter). However, currently the only way to improve the graphical color depth of a game is for artists to redraw all of the game's graphics.
 
-\textit{\textcolor{blue}{(5 points) Who cares? If you are successful, what difference will it make?}}
+%\textit{\textcolor{blue}{(5 points) Who cares? If you are successful, what difference will it make?}}
 
 If successful, this can allow the graphical content of a particular video game console to be translated into the style of another. Pixel artists are in very high demand and creating high quality pixel art is one of the largest financial strains that can be put on games, and is very time consuming/labor intensive. Pixel artists are often so hard to find that studios will save money by switching to 3D modeling as there are more artists and tools to assist them. This could allow for pixel artists to become more efficient, taking images from a previous game or console generation and translating it to the current project's generation. For instance, if one wished to modernize an 8-bit game, retroGAN enables someone to take the images from the original game and create new baseline screenshots for the sequel. Pixel artists would only need to tweak the translation instead of starting from scratch. There is also the interesting possibility of creating a real-time filter that could do this conversion ``on-the-fly'' as the game is being played. Additionally, this conversion process is not constrained to translation between NES and SNES, and could be done on other consoles and generations given suitable datasets.
 
-\textit{\textcolor{blue}{(5 points) What data did you use? Provide details about your data, specifically choose the most important aspects of your data mentioned \href{https://arxiv.org/abs/1803.09010}{here}. You don’t have to choose all of them, just the most relevant.}}
+%\textit{\textcolor{blue}{(5 points) What data did you use? Provide details about your data, specifically choose the most important aspects of your data mentioned \href{https://arxiv.org/abs/1803.09010}{here}. You don’t have to choose all of them, just the most relevant.}}
 
 Datasets for NES/SNES images did not exist in a suitable form, so we created our own from various screenshot databases on the internet. We implemented our own pre-processing, which included unsupervised color clustering to remove image artifacts, clamping colors to more closely adhere to the console's original color palette, resizing and cropping as appropriate, and other noise reduction techniques. This provided us with a reasonably large set of images that were organized into quality bands based on how much preprocessing was required. We cover this in more detail later in the paper.
 
@@ -79,7 +79,7 @@ Datasets for NES/SNES images did not exist in a suitable form, so we created our
 %------------------------------------------------------------------------
 \section{Approach}
 
-\textit{\textcolor{blue}{(10 points) What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?}}
+%\textit{\textcolor{blue}{(10 points) What did you do exactly? How did you solve the problem? Why did you think it would be successful? Is anything new in your approach?}}
 
 We attempted to implement translation between video game images from different generations. The primary problem was a lack of paired image data (an image from each generation) since each console generation consists almost solely of different games (with a small number of remakes). We thought CycleGAN had the potential to be a solution as it doesn't require paired data due to the cyclic process for training. That is, a NES image can be converted to a SNES fake by one leg of the cycle, and then the SNES fake can be converted back to a NES ``fake fake'' by the reverse leg. Then the round-trip images (the NES original and its doubly-converted ``fake fake'') can be compared for differences. In an ideal system, the real image and the ``fake fake'' image would be virtually identical. Both directions of the conversion process (NES$\rightarrow$SNES and SNES$\rightarrow$NES) can be cross-checked in this fashion.
 
@@ -89,7 +89,7 @@ Given the almost miraculous results in the literature that have been achieved us
 
 While the CycleGAN architecture has been used to solve many problems, our dataset is unique and to our knowledge, no other work has properly explored unpaired image-to-image translation in this domain.
 
-\textit{\textcolor{blue}{(5 points) What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?}}
+%\textit{\textcolor{blue}{(5 points) What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?}}
 
 The main problem we expected was a lack of clean data. While there are plenty of screenshots of games available across the Internet, we could not find any pre-sorted collections of clean images. As such, we ended up writing several custom web scrapers and image processing tools to collect and homogenize screenshots from several game catalog websites. This process is covered in more detail later in the paper.
 
@@ -97,7 +97,7 @@ Additionally, we had concerns if CycleGAN would be able capture the ``pixel-perf
 
 Conversely, in our situation, there are several palette restrictions that apply to the NES and SNES consoles. While the main difference between these consoles is their available color palettes, the NES also has several other graphical restrictions that place some difficultly in quantifying restrictions on the number of colors in a particular areas of the screen. The SNES also has similar restrictions, although nowhere near as severe. This was anticipated to be very difficult to generalize without magnitudes more data then we had available to us (approximately 100,000 images of varying quality between the two consoles). We didn't see great results in our first attempt, however after performing some additional pre-processing (covered later in this paper), we started seeing interesting results with convincing translations very early on.
 
-\textbf{\textcolor{blue}{Important: Mention any code repositories (with citations) or other sources that you used, and specifically what changes you made to them for your project.}}
+%\textbf{\textcolor{blue}{Important: Mention any code repositories (with citations) or other sources that you used, and specifically what changes you made to them for your project.}}
 
 \subsection{NES / SNES Palette Considerations}
 The NES palette comprises 56 fixed colors\footnote{https://en.wikipedia.org/wiki/List\_of\_video\_game\_console\_palettes}, whereas the SNES is more flexible with a full 15-bit RGB palette (with 5 bits for each of the red, green and blue channels)\footnote{https://en.wikipedia.org/wiki/List\_of\_monochrome\_and\_RGB\_color\_formats}, as shown in Figures \ref{fig:nes} and \ref{fig:snes} respectively.
@@ -142,9 +142,11 @@ Additionally, an \textit{identity loss} is used to provide color/hue stability. 
 
 \textcolor{red}{*** NEED A LITTLE BIT ABOUT RESNET AND UNET HERE?}
 \textcolor{darkgreen}{For this, I say just mention that various architectures were in our hyperparams(list them if you want), since we will give the images in the HP sections I think you just need to briefly talk about how we can swap them out.}
+
+
 \section{Experiments and Results}
 
-\textit{\textcolor{blue}{(10 points) How did you measure success?}}
+%\textit{\textcolor{blue}{(10 points) How did you measure success?}}
 
 The CycleGAN framework allowed for significant configurability of hyperparameters, and we took full advantage of the flexibility provided. As such, for our first pass success measure, we selected for the hyperparameters that showed the smallest amount of loss for at least \textit{one} direction of the cycle. This gave us a shortlist of candidates to examine that we evaluated manually to determine which to investigate further. One interesting (but not entirely unexpected) observation we found was that the cycle performance was not even; a set of hyperparameters that performed well for the NES$\rightarrow$SNES conversion would not necessarily perform well for the SNES$\rightarrow$NES conversion, and vice versa.
 
@@ -156,11 +158,11 @@ In practice, we found that using the stricter NES metric produced more meaningfu
 
 \textcolor{darkgreen}{Note that this was applied as a post-training evaluation metric. An idea for future work would be to implement this metric as part of the loss function; unfortunately, time constraints prevented us from performing this investigation ourselves.}
 
-\textit{\textcolor{blue}{What experiments were used?}}
+%\textit{\textcolor{blue}{What experiments were used?}}
 
 Using the hyperparameter search driver, each of the three authors ran a random hyperparameter search using the time available; once this was complete we first compared our results by the metric described above, selecting a shortlist of best candidates. We considered each direction of the cycle separately for the reasons mentioned previously. For each candidate, we performed a visual inspection of the output and reached a consensus on which of these had generated the best overall results. The final candidate from each cycle direction was then used to generate the images and graphs in the following sections.
 
-\textit{\textcolor{blue}{What were the results, both quantitative and qualitative? Did you succeed? Did you fail? Why? Justify your reasons with arguments supported by evidence and data.}}
+%\textit{\textcolor{blue}{What were the results, both quantitative and qualitative? Did you succeed? Did you fail? Why? Justify your reasons with arguments supported by evidence and data.}}
 
 \subsection{SNES$\rightarrow$NES Results}
 
@@ -187,6 +189,41 @@ These results show that, while there was definite improvement, and hence learnin
    \caption{SNES$\rightarrow$NES Results (NES Metric)}
    \label{tab:nesresults}
 \end{table}
+
+These results were generated using the hyperparameters shown in table \ref{tab:sneshyperparameters}. Note that only hyperparameters different than the defaults specified in the CycleGAN code are shown. 
+
+
+\begin{table}[H]
+   \begin{center}
+      \begin{tabular}{|l|c|}
+         \hline
+         \textbf{Hyperparameter} & \textbf{Value} \\
+         \hline\hline
+         Batch size     & $4$ \\ 
+         \hline
+                  GAN Mode     & lsgan\\
+         \hline
+         netG       & resnet\_9  \\ 
+         \hline
+         Pre-process     & pixel double and crop \\
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{SNES$\rightarrow$NES Hyperparameters TODO}
+   \label{tab:neshyperparameters}
+\end{table}
+
+The generator network used a 9-block ResNet architecture internally, and the discriminator network used the default basic architecture. Figure \ref{fig:unet} shows the general structure of a ResNet architecture\footnote{Adapted from \url{https://journals.plos.org/plosone/article/figure?id=10.1371/journal.pone.0249196.g006}}. The generator had $11.383 \times 10^6$ trainable parameters and the discriminator had $2.766 \times 10^6$.
+
+\textcolor{red} {*** WE NEED TO DESCRIBE LSGAN and BASIC}
+
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=0.485\textwidth]{figures/unet.png}
+   \caption{Example U-NET Architecture}
+   \label{fig:unet}
+\end{figure}
+% 
 
 %% screenshot 1
 \begin{figure}[H]
@@ -228,13 +265,9 @@ Overall these results are promising, although they are far from perfect. Since w
 There is evidence that the network is learning beyond color though, as \ref{fig:ss2a} shows that the NES conversion removed the foggy backdrop of the original image. This is very important, as drawing a foggy background in this example was mostly likely done using transparency on the SNES, which is something that the NES can't replicate as it didn't have enough spare memory to allow for it. This is evidence that the model was able to account beyond replicating the color palette and started understanding from NES data that effects like transparency aren't possible.
 
 
-
 \subsection{NES$\rightarrow$SNES Results}
 
 For the NES$\rightarrow$SNES conversion we performed an almost identical analysis. We selected several of the most aesthetically pleasing conversion images, and re-ran the stricter NES metric on both the real and fake images, as shown in table \ref{tab:snesresults}.
-
-\textcolor{red}{***HYPERPARAMETERS HERE}
-\textcolor{darkgreen} {Include the non-defaults in a simple table, include an image of the unet\_128 architecture, and put the total number of trained parameters in the caption for it}
 
 \begin{table}[H]
    \begin{center}
@@ -250,6 +283,46 @@ For the NES$\rightarrow$SNES conversion we performed an almost identical analysi
    \caption{NES$\rightarrow$SNES Results (NES Metric)}
    \label{tab:snesresults}
 \end{table}
+
+These results were generated using the hyperparameters shown in table \ref{tab:sneshyperparameters}. Note that only hyperparameters different than the defaults specified in the CycleGAN code are shown. 
+
+\begin{table}[H]
+   \begin{center}
+      \begin{tabular}{|l|c|}
+         \hline
+         \textbf{Hyperparameter} & \textbf{Value} \\
+         \hline\hline
+         Batch size     & $4$ \\ 
+         \hline
+                  GAN Mode     & lsgan\\
+         \hline
+         netG       & resnet\_9  \\ 
+         \hline
+         Pre-process     & pixel double and crop \\
+         \hline
+      \end{tabular}
+   \end{center}
+   \caption{NES$\rightarrow$SNES Hyperparameters}
+   \label{tab:sneshyperparameters}
+\end{table}
+
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=0.475\textwidth]{figures/graphs/83e6736fd3e445ed9264e6d64a766939_train_graph.png}
+   \caption{Training Graph with best NES$\rightarrow$SNES results.}
+   \label{fig:snesgraph}
+\end{figure}
+
+The generator network used a 9-block ResNet architecture internally, and the discriminator network used the default basic architecture. Figure \ref{fig:resnet} shows the general structure of a ResNet architecture\footnote{Adapted from \url{https://github.com/matthias-wright/cifar10-resnet}}. The generator had $11.383 \times 10^6$ trainable parameters and the discriminator had $2.766 \times 10^6$.
+
+\textcolor{red} {*** WE NEED TO DESCRIBE LSGAN and BASIC}
+
+\begin{figure}[H]
+   \centering
+   \includegraphics[width=0.475\textwidth]{figures/resnet_architecture.png}
+   \caption{Example ResNet Architecture}
+   \label{fig:resnet}
+\end{figure}
 
 
 %% screenshot 3
@@ -304,42 +377,42 @@ Additional follow up work could include improvements to the scoring metrics to t
 
 %-------------------------------------------------------------------------
 \section{Other Sections}
+%
+%\textit{\textcolor{blue}{You are welcome to introduce additional sections or subsections, if required, to address the following questions in detail.}}
+%
+%\textcolor{darkgreen}{I think we've added all the sections/sub-sections we need}
 
-\textit{\textcolor{blue}{You are welcome to introduce additional sections or subsections, if required, to address the following questions in detail.}}
+%\textit{\textcolor{blue}{(5 points) Appropriate use of figures / tables / visualizations. Are the ideas presented with appropriate illustration? Are the results presented clearly; are the important differences illustrated?}}
+%
+%\textcolor{darkgreen}{Done. All tables are great.}
 
-\textcolor{darkgreen}{I think we've added all the sections/sub-sections we need}
-
-\textit{\textcolor{blue}{(5 points) Appropriate use of figures / tables / visualizations. Are the ideas presented with appropriate illustration? Are the results presented clearly; are the important differences illustrated?}}
-
-\textcolor{darkgreen}{Done. All tables are great.}
-
-\textit{\textcolor{blue}{(5 points) Overall clarity. Is the manuscript self-contained? Can a peer who has also taken Deep Learning understand all of the points addressed above? Is sufficient detail provided?}}
-
-\textcolor{darkgreen}{Done. The paper is perfectly clear. I assume the reader knows about GANs but we explain CycleGANs and everything else is easy enough.}
+%\textit{\textcolor{blue}{(5 points) Overall clarity. Is the manuscript self-contained? Can a peer who has also taken Deep Learning understand all of the points addressed above? Is sufficient detail provided?}}
+%
+%\textcolor{darkgreen}{Done. The paper is perfectly clear. I assume the reader knows about GANs but we explain CycleGANs and everything else is easy enough.}
 
 \textit{\textcolor{blue}{(5 points) Finally, points will be distributed based on your understanding of how your project relates to Deep Learning. Here are some questions to think about:}}
 
 \textcolor{darkgreen}{Just need to include the two architectures used in our main runs, give our total \# of parameters in their captions, and give some brief analysis tying them into the experiments and this is done.}
 
-\textit{\textcolor{blue}{What was the structure of your problem? How did the structure of your model reflect the structure of your problem?}}
-
-\textcolor{darkgreen}{I think this is easily covered in the CycleGAN section, talking about how the architecture addresses unpaired images.}
+%\textit{\textcolor{blue}{What was the structure of your problem? How did the structure of your model reflect the structure of your problem?}}
+%
+%\textcolor{darkgreen}{I think this is easily covered in the CycleGAN section, talking about how the architecture addresses unpaired images.}
 
 \textit{\textcolor{blue}{What parts of your model had learned parameters (e.g., convolution layers) and what parts did not (e.g., post-processing classifier probabilities into decisions)? }}
 
 \textcolor{darkgreen}{Just briefly talk about how resnes9 and unet work and where their trainable parameters are. If we wanted to talk about stuff that doesn't have parameters, we could talk about the metric calculation or something?}
 
-\textit{\textcolor{blue}{What representations of input and output did the neural network expect? How was the data pre/post-processed?}}
-
-\textcolor{darkgreen}{I think this is more than covered with the pre-processing section (wherever we include that)}
+%\textit{\textcolor{blue}{What representations of input and output did the neural network expect? How was the data pre/post-processed?}}
+%
+%\textcolor{darkgreen}{I think this is more than covered with the pre-processing section (wherever we include that)}
 
 \textit{\textcolor{blue}{What was the loss function?}}
 
 \textcolor{darkgreen}{I mention how the loss works in the cycleGAN paper, but we could mention that it uses MSE loss in the experiments section if we wanted to be super specific?}
 
-\textit{\textcolor{blue}{Did the model overfit? How well did the approach generalize?}}
-
-\textcolor{darkgreen}{I'll cover overfitting in the snes$->$nes section}
+%\textit{\textcolor{blue}{Did the model overfit? How well did the approach generalize?}}
+%
+%\textcolor{darkgreen}{I'll cover overfitting in the snes$->$nes section}
 
 \textit{\textcolor{blue}{What hyperparameters did the model have? How were they chosen? How did they affect performance? What optimizer was used?}}
 
@@ -351,9 +424,9 @@ TODO: Add in the hyperparameters we ended up using.
 
 \textcolor{darkgreen}{We do briefly mention pytorch in random places but we could add it in the intro/approach somewhere}
 
-\textit{\textcolor{blue}{What existing code or models did you start with and what did those starting points provide?}}
-
-\textcolor{darkgreen}{I think this is totally covered in the CycleGAN section.}
+%\textit{\textcolor{blue}{What existing code or models did you start with and what did those starting points provide?}}
+%
+%\textcolor{darkgreen}{I think this is totally covered in the CycleGAN section.}
 
 \textit{\textcolor{blue}{Briefly discuss potential future work that the research community could focus on to make improvements in the direction of your project's topic.}}
 
@@ -370,288 +443,10 @@ Alternate loss functions in particular are an interesting area for further resea
 \section{Work Division}
 \textcolor{darkgreen}{Do we need to update these at all?}
 
-\textit{\textcolor{blue}{Please add a section on the delegation of work among team members at the end of the report, in the form of a table and paragraph description. This and references do \textbf{NOT} count towards your page limit. An example has been provided in Table \ref{tab:contributions}.}}
+%\textit{\textcolor{blue}{Please add a section on the delegation of work among team members at the end of the report, in the form of a table and paragraph description. This and references do \textbf{NOT} count towards your page limit. An example has been provided in Table \ref{tab:contributions}.}}
 
 \newpage
 \newpage
-\section{Miscellaneous Information}
-
-The rest of the information in this format template has been adapted from CVPR 2020 and provides guidelines on the lower-level specifications regarding the paper's format.
-
-\subsection{Language}
-
-All manuscripts must be in English.
-
-
-\subsection{Paper length}
-Papers, excluding the references section,
-must be no longer than six pages in length. The references section
-will not be included in the page count, and there is no limit on the
-length of the references section. For example, a paper of six pages
-with two pages of references would have a total length of 8 pages.
-
-%-------------------------------------------------------------------------
-\subsection{The ruler}
-The \LaTeX\ style defines a printed ruler which should be present in the
-version submitted for review.  The ruler is provided in order that
-reviewers may comment on particular lines in the paper without
-circumlocution.  If you are preparing a document using a non-\LaTeX\
-document preparation system, please arrange for an equivalent ruler to
-appear on the final output pages.  The presence or absence of the ruler
-should not change the appearance of any other content on the page.  The
-camera ready copy should not contain a ruler. (\LaTeX\ users may uncomment
-the \verb'\cvprfinalcopy' command in the document preamble.)  Reviewers:
-note that the ruler measurements do not align well with lines in the paper
---- this turns out to be very difficult to do well when the paper contains
-many figures and equations, and, when done, looks ugly.  Just use fractional
-references (e.g.\ this line is $095.5$), although in most cases one would
-expect that the approximate location will be adequate.
-
-\subsection{Mathematics}
-
-Please number all of your sections and displayed equations.  It is
-important for readers to be able to refer to any particular equation.  Just
-because you didn't refer to it in the text doesn't mean some future reader
-might not need to refer to it.  It is cumbersome to have to use
-circumlocutions like ``the equation second from the top of page 3 column
-1''.  (Note that the ruler will not be present in the final copy, so is not
-an alternative to equation numbers).  All authors will benefit from reading
-Mermin's description of how to write mathematics:
-\url{http://www.pamitc.org/documents/mermin.pdf}.
-
-Finally, you may feel you need to tell the reader that more details can be
-found elsewhere, and refer them to a technical report.  For conference
-submissions, the paper must stand on its own, and not {\em require} the
-reviewer to go to a techreport for further details.  Thus, you may say in
-the body of the paper ``further details may be found
-in~\cite{Authors14b}''.  Then submit the techreport as additional material.
-Again, you may not assume the reviewers will read this material.
-
-Sometimes your paper is about a problem which you tested using a tool which
-is widely known to be restricted to a single institution.  For example,
-let's say it's 1969, you have solved a key problem on the Apollo lander,
-and you believe that the CVPR70 audience would like to hear about your
-solution.  The work is a development of your celebrated 1968 paper entitled
-``Zero-g frobnication: How being the only people in the world with access to
-the Apollo lander source code makes us a wow at parties'', by Zeus \etal.
-
-You can handle this paper like any other.  Don't write ``We show how to
-improve our previous work [Anonymous, 1968].  This time we tested the
-algorithm on a lunar lander [name of lander removed for blind review]''.
-That would be silly, and would immediately identify the authors. Instead
-write the following:
-\begin{quotation}
-   \noindent
-   We describe a system for zero-g frobnication.  This
-   system is new because it handles the following cases:
-   A, B.  Previous systems [Zeus et al. 1968] didn't
-   handle case B properly.  Ours handles it by including
-   a foo term in the bar integral.
-
-   ...
-
-   The proposed system was integrated with the Apollo
-   lunar lander, and went all the way to the moon, don't
-   you know.  It displayed the following behaviours
-   which show how well we solved cases A and B: ...
-\end{quotation}
-As you can see, the above text follows standard scientific convention,
-reads better than the first version, and does not explicitly name you as
-the authors.  A reviewer might think it likely that the new paper was
-written by Zeus \etal, but cannot make any decision based on that guess.
-He or she would have to be sure that no other authors could have been
-contracted to solve problem B.
-\medskip
-
-\noindent
-FAQ\medskip\\
-{\bf Q:} Are acknowledgements OK?\\
-{\bf A:} No.  Leave them for the final copy.\medskip\\
-{\bf Q:} How do I cite my results reported in open challenges?
-{\bf A:} To conform with the double blind review policy, you can report results of other challenge participants together with your results in your paper. For your results, however, you should not identify yourself and should not mention your participation in the challenge. Instead present your results referring to the method proposed in your paper and draw conclusions based on the experimental comparison to other results.\medskip\\
-
-\begin{figure}[t]
-   \begin{center}
-      \fbox{\rule{0pt}{2in} \rule{0.9\linewidth}{0pt}}
-      %\includegraphics[width=0.8\linewidth]{egfigure.eps}
-   \end{center}
-   \caption{Example of caption.  It is set in Roman so that mathematics
-      (always set in Roman: $B \sin A = A \sin B$) may be included without an
-      ugly clash.}
-   \label{fig:long}
-   \label{fig:onecol}
-\end{figure}
-
-\subsection{Miscellaneous}
-
-\noindent
-Compare the following:\\
-\begin{tabular}{ll}
-   \verb'$conf_a$' & $conf_a$          \\
-   \verb'$\mathit{conf}_a$' & $\mathit{conf}_a$
-\end{tabular}\\
-See The \TeX book, p165.
-
-The space after \eg, meaning ``for example'', should not be a
-sentence-ending space. So \eg is correct, {\em e.g.} is not.  The provided
-\verb'\eg' macro takes care of this.
-
-When citing a multi-author paper, you may save space by using ``et alia'',
-shortened to ``\etal'' (not ``{\em et.\ al.}'' as ``{\em et}'' is a complete word.)
-However, use it only when there are three or more authors.  Thus, the
-following is correct: ``
-Frobnication has been trendy lately.
-It was introduced by Alpher~\cite{Alpher02}, and subsequently developed by
-Alpher and Fotheringham-Smythe~\cite{Alpher03}, and Alpher \etal~\cite{Alpher04}.''
-
-This is incorrect: ``... subsequently developed by Alpher \etal~\cite{Alpher03} ...''
-because reference~\cite{Alpher03} has just two authors.  If you use the
-\verb'\etal' macro provided, then you need not worry about double periods
-when used at the end of a sentence as in Alpher \etal.
-
-For this citation style, keep multiple citations in numerical (not
-chronological) order, so prefer \cite{Alpher03,Alpher02,Authors14} to
-\cite{Alpher02,Alpher03,Authors14}.
-
-
-\begin{figure*}
-   \begin{center}
-      \fbox{\rule{0pt}{2in} \rule{.9\linewidth}{0pt}}
-   \end{center}
-   \caption{Example of a short caption, which should be centered.}
-   \label{fig:short}
-\end{figure*}
-
-%------------------------------------------------------------------------
-\subsection{Formatting your paper}
-
-All text must be in a two-column format. The total allowable width of the
-text area is $6\frac78$ inches (17.5 cm) wide by $8\frac78$ inches (22.54
-cm) high. Columns are to be $3\frac14$ inches (8.25 cm) wide, with a
-$\frac{5}{16}$ inch (0.8 cm) space between them. The main title (on the
-first page) should begin 1.0 inch (2.54 cm) from the top edge of the
-page. The second and following pages should begin 1.0 inch (2.54 cm) from
-the top edge. On all pages, the bottom margin should be 1-1/8 inches (2.86
-cm) from the bottom edge of the page for $8.5 \times 11$-inch paper; for A4
-paper, approximately 1-5/8 inches (4.13 cm) from the bottom edge of the
-page.
-
-%-------------------------------------------------------------------------
-\subsection{Margins and page numbering}
-
-All printed material, including text, illustrations, and charts, must be kept
-within a print area 6-7/8 inches (17.5 cm) wide by 8-7/8 inches (22.54 cm)
-high.
-
-
-
-%-------------------------------------------------------------------------
-\subsection{Type-style and fonts}
-
-Wherever Times is specified, Times Roman may also be used. If neither is
-available on your word processor, please use the font closest in
-appearance to Times to which you have access.
-
-MAIN TITLE. Center the title 1-3/8 inches (3.49 cm) from the top edge of
-the first page. The title should be in Times 14-point, boldface type.
-Capitalize the first letter of nouns, pronouns, verbs, adjectives, and
-adverbs; do not capitalize articles, coordinate conjunctions, or
-prepositions (unless the title begins with such a word). Leave two blank
-lines after the title.
-
-AUTHOR NAME(s) and AFFILIATION(s) are to be centered beneath the title
-and printed in Times 12-point, non-boldface type. This information is to
-be followed by two blank lines.
-
-The ABSTRACT and MAIN TEXT are to be in a two-column format.
-
-MAIN TEXT. Type main text in 10-point Times, single-spaced. Do NOT use
-double-spacing. All paragraphs should be indented 1 pica (approx. 1/6
-inch or 0.422 cm). Make sure your text is fully justified---that is,
-flush left and flush right. Please do not place any additional blank
-lines between paragraphs.
-
-Figure and table captions should be 9-point Roman type as in
-Figures~\ref{fig:onecol} and~\ref{fig:short}.  Short captions should be centred.
-
-\noindent Callouts should be 9-point Helvetica, non-boldface type.
-Initially capitalize only the first word of section titles and first-,
-second-, and third-order headings.
-
-FIRST-ORDER HEADINGS. (For example, {\large \bf 1. Introduction})
-should be Times 12-point boldface, initially capitalized, flush left,
-with one blank line before, and one blank line after.
-
-SECOND-ORDER HEADINGS. (For example, { \bf 1.1. Database elements})
-should be Times 11-point boldface, initially capitalized, flush left,
-with one blank line before, and one after. If you require a third-order
-heading (we discourage it), use 10-point Times, boldface, initially
-capitalized, flush left, preceded by one blank line, followed by a period
-and your text on the same line.
-
-%-------------------------------------------------------------------------
-\subsection{Footnotes}
-
-Please use footnotes\footnote {This is what a footnote looks like.  It
-   often distracts the reader from the main flow of the argument.} sparingly.
-Indeed, try to avoid footnotes altogether and include necessary peripheral
-observations in
-the text (within parentheses, if you prefer, as in this sentence).  If you
-wish to use a footnote, place it at the bottom of the column on the page on
-which it is referenced. Use Times 8-point type, single-spaced.
-
-
-%-------------------------------------------------------------------------
-\subsection{References}
-
-List and number all bibliographical references in 9-point Times,
-single-spaced, at the end of your paper. When referenced in the text,
-enclose the citation number in square brackets, for
-example~\cite{Authors14}.  Where appropriate, include the name(s) of
-editors of referenced books.
-
-\begin{table}
-   \begin{center}
-      \begin{tabular}{|l|c|}
-         \hline
-         Method & Frobnability           \\
-         \hline\hline
-         Theirs & Frumpy                 \\
-         Yours  & Frobbly                \\
-         Ours   & Makes one's heart Frob \\
-         \hline
-      \end{tabular}
-   \end{center}
-   \caption{Results.   Ours is better.}
-\end{table}
-
-%-------------------------------------------------------------------------
-\subsection{Illustrations, graphs, and photographs}
-
-All graphics should be centered.  Please ensure that any point you wish to
-make is resolvable in a printed copy of the paper.  Resize fonts in figures
-to match the font in the body text, and choose line widths which render
-effectively in print.  Many readers (and reviewers), even of an electronic
-copy, will choose to print your paper in order to read it.  You cannot
-insist that they do otherwise, and therefore must not assume that they can
-zoom in to see tiny details on a graphic.
-
-When placing figures in \LaTeX, it's almost always best to use
-\verb+\includegraphics+, and to specify the  figure width as a multiple of
-the line width as in the example below
-   {\small\begin{verbatim}
-   \usepackage[dvips]{graphicx} ...
-   \includegraphics[width=0.8\linewidth]
-                   {myfile.eps}
-\end{verbatim}
-   }
-
-
-%-------------------------------------------------------------------------
-\subsection{Color}
-
-Please refer to the author guidelines on the CVPR 2020 web page for a discussion
-of the use of color in your document.
 
 %------------------------------------------------------------------------
 \section{Appendixes}
