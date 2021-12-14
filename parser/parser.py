@@ -35,7 +35,7 @@ def graph_loss(ld, args):
     plt.ylabel(f'{args.type}ing Loss')
     # Graph field we care about
     for y in ['D_A', 'G_A', 'cycle_A', 'idt_A', 'D_B', 'G_B', 'cycle_B', 'idt_B']:
-        plt.plot(x, ld[y], label=y)
+        plt.plot(x, ld[y], label=y, linewidth=.25)
 
     plt.grid()
     plt.legend()
