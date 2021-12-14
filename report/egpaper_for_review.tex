@@ -289,11 +289,15 @@ Although it is apparent that this leg of the conversion was not as successful as
 %%%%%%%%% CONCLUSION
 \section{Conclusion}
 
-The golden age of 8-bit and 16-bit pixel art is past but the need for generating this type of graphic is ever-present. To this end we developed retroGAN, an implementation of CycleGAN. Its purpose is to up-convert NES to SNES images and down-convert SNES to NES images.
+Our results show that despite the complications, some promising results emerged from our experiments. As expected, the results for the SNES$\rightarrow$NES conversion were better than the NES$\rightarrow$SNES due to the comparative simplicity of a down-conversion (where information loss isn't necessarily a problem) versus up-conversion, where information has to be synthesized from learned experience.
 
-To train the CycleGAN, we generated an unpaired dataset of NES and SNES screenshots. Multiple layers of image preprocessing and augmenting were implemented to improve its learning. The loss function was adequate to learn the image conversion; however, we needed to know how well it was learning the correct color palette as well, which forced us to engineer a unique scoring metric.
+In essence, the former conversion is almost trivially easy for the CycleGAN compared to the latter. 
 
-As you can see from the results, retroGAN is quite effective at its job. Follow up work should include using our scoring metric as a loss function or scaling images up to 32 or 64-bit systems.
+With further experimentation and architecture tweaks, we believe that we would have been more successful with the NES$\rightarrow$SNES conversion. 
+
+Examples of possible future work could include video-based training, using pixel-perfect screen captures from console emulation software. The use of video would hopefully help the CycleGAN perform stable modifications as the game progressed. If successful, this could be used to perform real-time up-conversion of games played in an emulator.
+
+ Additional follow up work could include improvements to the scoring metrics to take into account the additional hardware restrictions, as well as the incorporation of the metrics into the respective loss functions.
 
 %-------------------------------------------------------------------------
 \section{Other Sections}
