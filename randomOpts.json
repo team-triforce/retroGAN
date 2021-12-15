@@ -1,0 +1,24 @@
+{
+  "random_lr_policy": ["linear", "step", "plateau", "cosine"],
+  "ngf": [32, 64, 128],
+  "ndf": [32, 64, 128],
+  "netD": ["basic", "n_layers", "pixel"],
+  "n_layers_D": [2, 3, 4, 5, 6, 7, 8],
+  "netG": ["resnet_9blocks", "resnet_6blocks", "unet_256", "unet_128"],
+  "init_type": ["normal", "xavier", "kaiming", "orthogonal"],
+  "init_gain": [0.01, 0.02, 0.03, 0.04],
+  "no_dropout": [true, false],
+
+  "tf_negate": [true, false],
+  "tf_size_augment": ["double_and_crop", "none"],
+  "n_epochs": [10, 25, 50, 75],
+  "n_epochs_decay": [10, 25, 50, 75],
+  "beta1": [0.1, 0.25, 0.5, 0.75, 0.9],
+  "lr": [0.00005, 0.0001, 0.0002, 0.0005, 0.001],
+  "gan_mode": ["vanilla", "lsgan"],
+  "lr_policy": ["linear", "step", "plateau", "cosine"],
+  "lr_decay_iters": [25, 50, 75, 100],
+  "lambda_A": [1, 2, 5, 10, 25, 50, 75, 100],
+  "lambda_B": [1, 2, 5, 10, 25, 50, 75, 100],
+  "lambda_identity": [0.1, 0.3, 0.5, 0.7, 0.9]
+}
