@@ -77,11 +77,11 @@ Another area of interest is in software emulators that are often used to breathe
 
 %\textit{\textcolor{blue}{(5 points) Who cares? If you are successful, what difference will it make?}}
 
-If successful, this can allow the graphical content of a particular video game console to be translated into the style of another. Pixel artists are in very high demand and creating high quality pixel art is one of the largest financial strains that can be put on games, and is very time consuming/labor intensive. Pixel artists are often so hard to find that studios will save money by switching to 3D modeling as there are more artists and tools to assist them. This could allow for pixel artists to become more efficient, taking images from a previous game or console generation and translating it to the current project's generation. For instance, if one wished to modernize an 8-bit game, retroGAN enables someone to take the images from the original game and create new baseline screenshots for the sequel. Pixel artists would only need to tweak the translation instead of starting from scratch. There is also the interesting possibility of creating a real-time filter that could do this conversion ``on-the-fly'' as the game is being played. Additionally, this conversion process is not constrained to translation between NES and SNES, and could be done on other consoles and generations given suitable datasets.
+If successful, this can allow the graphical content of a particular video game console to be translated into the style of another. Pixel artists are in very high demand and creating high quality pixel art is one of the largest financial strains that can be put on games, and is very time consuming/labor intensive. Pixel artists are often so hard to find that studios will save money by switching to 3D modeling as there are more artists and tools to assist them. This could allow for pixel artists to become more efficient, taking images from a previous game or console generation and translating it to the current project's generation. For instance, if one wished to modernize an 8-bit game, retroGAN enables someone to take the images from the original game and create new baseline screenshots for the sequel. Pixel artists would only need to tweak the translation instead of starting from scratch. There is also the interesting possibility of creating a real-time filter that could do this conversion ``on-the-fly'' as the game is being played. This conversion process is not constrained to translation between NES and SNES, and could be done on other consoles and generations given suitable datasets.
 
 %\textit{\textcolor{blue}{(5 points) What data did you use? Provide details about your data, specifically choose the most important aspects of your data mentioned \href{https://arxiv.org/abs/1803.09010}{here}. You don’t have to choose all of them, just the most relevant.}}
 
-Datasets for NES/SNES images did not exist in a suitable form, so we created our own from various screenshot databases on the internet. We implemented our own pre-processing, which included unsupervised color clustering to remove image artifacts, clamping colors to more closely adhere to the console's original color palette, resizing and cropping as appropriate, and other noise reduction techniques. This provided us with a reasonably large set of images that were organized into quality bands based on how much preprocessing was required. We cover this in more detail later in the paper.
+Datasets for NES/SNES images did not exist in a suitable form, so we created our own from various screenshot databases on the internet. We implemented our own pre-processing, which included unsupervised color clustering to remove image artifacts, clamping colors to more closely adhere to the console's original color palette, resizing and cropping as appropriate, and other noise reduction techniques. This provided us with a reasonably large set of images that were organized into quality bands based on how much preprocessing was required. This process is detailed in the appendix to this paper.
 
 %-------------------------------------------------------------------------
 %------------------------------------------------------------------------
@@ -99,11 +99,11 @@ While the CycleGAN architecture has been used to solve many problems, our datase
 
 %\textit{\textcolor{blue}{(5 points) What problems did you anticipate? What problems did you encounter? Did the very first thing you tried work?}}
 
-The main problem we expected was a lack of clean data. While there are plenty of screenshots of games available across the Internet, we could not find any pre-sorted collections of clean images. As such, we ended up writing several custom web scrapers and image processing tools to collect and homogenize screenshots from several game catalog websites. This process is covered in more detail later in the paper.
+The main problem we expected was a lack of clean data. While there are plenty of screenshots of games available across the Internet, we could not find any pre-sorted collections of clean images. As such, we ended up writing several custom web scrapers and image processing tools to collect and homogenize screenshots from several game catalog websites.
 
 Additionally, we had concerns if CycleGAN would be able capture the ``pixel-perfect'' constraints and requirements for the conversion process. Previously, CycleGANs have been typically used for experiments that have not required such exact results; for example, the well-known Horse to Zebra results were not conditioned on the exact shades of white and black of the zebra stripes.
 
-Conversely, in our situation, there are several palette restrictions that apply to the NES and SNES consoles. While the main difference between these consoles is their available color palettes, the NES also has several other graphical restrictions that place some difficultly in quantifying restrictions on the number of colors in a particular areas of the screen. The SNES also has similar restrictions, although nowhere near as severe. This was anticipated to be very difficult to generalize without magnitudes more data then we had available to us (approximately 100,000 images of varying quality between the two consoles). We didn't see great results in our first attempt, however after performing some additional pre-processing (covered later in this paper), we started seeing interesting results with convincing translations very early on.
+Conversely, in our situation, there are several palette restrictions that apply to the NES and SNES consoles. While the main difference between these consoles is their available color palettes, the NES also has several other graphical restrictions that place some difficultly in quantifying restrictions on the number of colors in a particular areas of the screen. The SNES also has similar restrictions, although nowhere near as severe. This was anticipated to be very difficult to generalize without magnitudes more data then we had available to us (approximately 100,000 images of varying quality between the two consoles). We didn't see great results in our first attempt, however after performing the additional pre-processing, we started seeing interesting results with convincing translations very early on.
 
 %\textbf{\textcolor{blue}{Important: Mention any code repositories (with citations) or other sources that you used, and specifically what changes you made to them for your project.}}
 
@@ -159,7 +159,7 @@ For each promising candidate set, we then ran a customized metric to evaluate th
 
 This metric scores an image based on how closely the pixels match the target console palette modulated by the percentage of image pixels that match the target palette exactly. This modulation was necessary to compensate for the fact that the SNES palette has many more entries, and consequently, it was easier for the algorithm to score highly as any selected color was never too far away from a valid palette entry in RGB space. A perfect metric of either system would require accounting for hundreds of variables(pixel limit, per-pixel color palette limits, transparency limitations, max sprites per screen, etc), however this would be a task outside the scope of this paper and would heavily depend on domain knowledge, so we chose a metric that focuses on color palette, as it's a much more tractable task and is a metric that could be adapted to consoles other than just the NES/SNES.
 
-In practice, we found that using the stricter NES metric produced more meaningful results; that is, for the SNES$\rightarrow$NES conversion, we found that measuring the increase in value for this metric between the real SNES and fake NES image was a strong indicator of success. Conversely, for the NES$\rightarrow$SNES conversion, the decrease in value of this metric was a good indicator of success.
+In practice, we found that using the stricter NES metric produced more meaningful results; that is, for the SNES$\rightarrow$NES conversion, we found that measuring the increase in value for this metric between the real SNES and fake NES image was a strong indicator of success. Conversely, for the NES$\rightarrow$SNES conversion, the decrease in value of this metric was a good (although looser) indicator of success.
 
 %\textit{\textcolor{blue}{What experiments were used?}}
 
@@ -173,7 +173,7 @@ As expected, the SNES$\rightarrow$NES conversion proved to be the most effective
 
 
 We selected several of the most aesthetically pleasing conversion images, and re-ran the NES metric on both the real and fake images, as shown in table \ref{tab:nesresults}.
-These results show that, while there was definite improvement, and hence learning, the network was unable to score the same metric as the training set. For a dataset size of 2500 (with a 90/10 train/test split), the averaged SNES metric was $0.6382$, indicating that across all of the training images, roughly 64\% of the pixels conformed to the NES palette. The specific dataset size was chosen due to training time constraints.
+These results show that, while there was definite improvement, and hence learning, the network was unable to score the same metric as the training set. For a dataset size of 2500 (with a 90/10 train/test split), the averaged SNES metric was $0.6382$, indicating that across all of the training images, roughly 64\% of the pixels conformed to the NES palette. The specific dataset size was chosen due to training time constraints, and the resulting training graph is shown in figure \ref{fig:nesgraph}.
 
 \begin{table}[H]
    \begin{center}
@@ -190,8 +190,7 @@ These results show that, while there was definite improvement, and hence learnin
    \label{tab:nesresults}
 \end{table}
 
-These results were generated using the hyperparameters shown in table \ref{tab:sneshyperparameters}. Note that only hyperparameters different than the defaults specified in the CycleGAN code are shown. 
-
+These results were generated using the hyperparameters shown in table \ref{tab:neshyperparameters}. Note that only hyperparameters different than the defaults specified in the CycleGAN code are shown. 
 
 \begin{table}[H]
    \begin{center}
@@ -240,12 +239,12 @@ The ``least squares'' loss function was used by the discriminator (as determined
 \begin{figure}[H]
    \centering
    \begin{subfigure}[b]{0.225\textwidth}
-      \includegraphics[width=\textwidth]{figures/snes_to_nes/AV_Mahjong_Club_(J)_(Unl)_copy__ucc__8_real_B.png}
+      \includegraphics[width=\textwidth, height=0.9\textwidth]{figures/snes_to_nes/AV_Mahjong_Club_(J)_(Unl)_copy__ucc__8_real_B.png}
       \caption{Real SNES Screenshot}
       \label{fig:ss1a}
    \end{subfigure}
    \begin{subfigure}[b]{0.225\textwidth}
-      \includegraphics[width=\textwidth]{figures/snes_to_nes/AV_Mahjong_Club_(J)_(Unl)_copy__ucc__8_fake_A.png}
+      \includegraphics[width=\textwidth, height=0.9\textwidth]{figures/snes_to_nes/AV_Mahjong_Club_(J)_(Unl)_copy__ucc__8_fake_A.png}
       \caption{Fake NES screenshot}
       \label{fig:ss1b}
    \end{subfigure}
@@ -269,12 +268,11 @@ The ``least squares'' loss function was used by the discriminator (as determined
 \end{figure}
 
 Despite the lower metric score, a visual examination of the results in figures \ref{fig:ss1a} and \ref{fig:ss1b} show that the fake image is clearly closer to the target aesthetic, and the conversion process appears to be more involved than a simple palette conversion.
-In particular, figure \ref{fig:ss1b} seems to show that different conversion criteria have been applied to different areas of the image. If one compares the lower left brighter green area in figure \ref{fig:ss2a} with the similar intensity green area just right of center, it appears that the lower left area is rendered brighter in \ref{fig:ss2b} than the right of center area, even though the same areas in the source image are of similar intensity.
+In particular, figure \ref{fig:ss2b} seems to show that different conversion criteria have been applied to different areas of the image. If one compares the lower left brighter green area in figure \ref{fig:ss2a} with the similar intensity green area just right of center, it appears that the lower left area is rendered brighter in \ref{fig:ss2b} than the right of center area, even though the same areas in the source image are of similar intensity.
 
-Overall these results are promising, although they are far from perfect. Since we're using an imperfect metric, the fact that we chose our final network based on the performance of that metric is inducing some level of bias towards color. As we stated before, to truly represent a NES game requires accounting for many additional constraints beyond color. However, since that isn't a tractable metric we can create and our metric is centered only on color, it's reasonable that the network is prone to overfitting color at the cost of other features not reliant on color palette.
+Overall these results are promising, although they are far from perfect. Since we are using an imperfect metric, the fact that we chose our final network based on the performance of that metric is inducing some level of bias towards color. As we stated before, to truly represent a NES game requires accounting for many additional constraints beyond color. However, since this is not a tractable metric we can create and our metric is centered only on color, it's reasonable that the network is prone to overfitting color at the cost of other features not reliant on color palette.
 
-There is evidence that the network is learning beyond color though, as \ref{fig:ss2a} shows that the NES conversion removed the foggy backdrop of the original image. This is very important, as drawing a foggy background in this example was mostly likely done using transparency on the SNES, which is something that the NES can't replicate as it didn't have enough spare memory to allow for it. This is evidence that the model was able to account beyond replicating the color palette and started understanding from NES data that effects like transparency aren't possible.
-
+There is evidence that the network is learning beyond color though, as \ref{fig:ss1a} shows that the NES conversion removed the foggy backdrop of the original image. This is very important, as drawing a foggy background in this example was mostly likely done using transparency on the SNES, which is something that the NES can't replicate as it didn't have enough spare memory to allow for it. This is evidence that the model was able to account beyond replicating the color palette and started understanding from NES data that effects like transparency aren't possible.
 
 \subsection{NES$\rightarrow$SNES Results}
 
@@ -295,7 +293,7 @@ For the NES$\rightarrow$SNES conversion we performed an almost identical analysi
    \label{tab:snesresults}
 \end{table}
 
-These results were generated using the hyperparameters shown in table \ref{tab:sneshyperparameters}. Note that only hyperparameters different than the defaults specified in the CycleGAN code are shown. 
+These results were generated using the hyperparameters shown in table \ref{tab:sneshyperparameters}. Note that only hyperparameters different than the defaults specified in the CycleGAN code are shown, and the resulting training graph is shown in figure \ref{fig:snesgraph}. 
 
 \begin{table}[H]
    \begin{center}
@@ -330,51 +328,50 @@ The ``least squares'' loss function was used by the discriminator (as determined
 
 \begin{figure}[H]
    \centering
-   \includegraphics[width=0.3\textwidth]{figures/resnet_architecture.png}
+   \includegraphics[width=0.3\textwidth, height=0.2426\textwidth]{figures/resnet_architecture.png}
    \caption{Example ResNet Architecture}
    \label{fig:resnet}
 \end{figure}
-
 
 %% screenshot 3
 \begin{figure}[H]
    \centering
    \begin{subfigure}[b]{0.235\textwidth}
-      \includegraphics[width=\textwidth]{figures/nes_to_snes/Crisis_Force_(J)__ucc__12_real_A.png}
+      \includegraphics[width=\textwidth, height=0.8\textwidth]{figures/nes_to_snes/Crisis_Force_(J)__ucc__12_real_A.png}
       \caption{Real NES Screenshot}
       \label{fig:ss3a}
    \end{subfigure}
    \begin{subfigure}[b]{0.235\textwidth}
-      \includegraphics[width=\textwidth]{figures/nes_to_snes/Crisis_Force_(J)__ucc__12_fake_B.png}
+      \includegraphics[width=\textwidth, height=0.8\textwidth]{figures/nes_to_snes/Crisis_Force_(J)__ucc__12_fake_B.png}
       \caption{Fake SNES screenshot}
       \label{fig:ss3b}
    \end{subfigure}
    \caption{Crisis Force: NES$\rightarrow$SNES}
+   \label{fig:ss3}
 \end{figure}
 
 %% screenshot 4
 \begin{figure}[H]
    \centering
    \begin{subfigure}[b]{0.235\textwidth}
-      \includegraphics[width=\textwidth]{figures/nes_to_snes/Ninja_Kun_-_Majou_no_Bouken_(J)__ucc__8_real_A.png}
+      \includegraphics[width=\textwidth, height=0.75\textwidth]{figures/nes_to_snes/Ninja_Kun_-_Majou_no_Bouken_(J)__ucc__8_real_A.png}
       \caption{Real NES Screenshot}
       \label{fig:ss4a}
    \end{subfigure}
    \begin{subfigure}[b]{0.235\textwidth}
-      \includegraphics[width=\textwidth]{figures/nes_to_snes/Ninja_Kun_-_Majou_no_Bouken_(J)__ucc__8_fake_B.png}
+      \includegraphics[width=\textwidth, height=0.75\textwidth]{figures/nes_to_snes/Ninja_Kun_-_Majou_no_Bouken_(J)__ucc__8_fake_B.png}
       \caption{Fake SNES screenshot}
       \label{fig:ss4b}
    \end{subfigure}
    \caption{Ninja Kid: NES$\rightarrow$SNES}
+   \label{fig:ss4}
 \end{figure}
 
-Although it is apparent that this leg of the conversion was not as successful as the reverse leg, it is still notable that the results show that some selective conversion has taken place. Notably, the results show that background areas tended to be lightened and blurred, bright spots tended to be blown out and made brighter, while areas of darker colors \--- particular those with black pixel outlines \--- tended to be left relatively untouched, implying that the network did at least extract some relevant feature information.
+Although it is apparent that this leg of the conversion was not as successful as the reverse leg, it is still interesting that the results show that some selective conversion has taken place. Notably, figures \ref{fig:ss3} and \ref{fig:ss4} show that background areas tended to be lightened and blurred, bright spots tended to be blown out and made brighter, while areas of darker colors \--- particular those with black pixel outlines \--- tended to be left relatively untouched, implying that the network did at least extract some relevant feature information.
 
-For two reasons we concluded that we underfit the model. First, the fake training images continued to improve as the training went one. At no point did the generated image's quality plateau. Second, we used smaller training sizes due to time constraints. Given more time we may have been able to use our entire dataset and fully train the model.
-
+For two reasons we concluded that we underfit the model. First, the fake training images continued to improve as the training went on. At no point did the generated image's quality plateau. Second, we used smaller training sizes due to time constraints. Given more time we may have been able to use our entire dataset and fully train the model.
 %%%%%%%%% CONCLUSION
 \section{Conclusion And Future Work}
-
 Our results show that despite the complications, some promising results emerged from our experiments. As expected, the results for the SNES$\rightarrow$NES conversion were better than the NES$\rightarrow$SNES due to the comparative simplicity of a down-conversion (where information loss isn't necessarily a problem) versus up-conversion, where information has to be synthesized from learned experience.
 
 In essence, the former conversion is almost trivially easy for the CycleGAN compared to the latter.
@@ -383,13 +380,13 @@ With further experimentation and architecture tweaks, we believe that we would h
 
 Examples of possible future work could include video-based training, using pixel-perfect screen captures from console emulation software. The use of video would hopefully help the CycleGAN perform stable modifications as the game progressed. If successful, this could be used to perform real-time up-conversion of games played in an emulator.
 
-Additional follow up work could include improvements to the scoring metrics to take into account the additional hardware restrictions, as well as the incorporation of the metrics into the respective loss functions.
+Additional follow-up work could include improvements to the scoring metrics to take into account the additional hardware restrictions, as well as the incorporation of the metrics into the respective loss functions.
 
 Future work could also focus on expanding the consoles that the framework supports. For example, mapping from 16-bit to 32-bit or even mapping larger jumps from 16-bit to 64-bit. There would be added complexity to this, which may result in needing larger training sets or alternate loss functions.
 
 Alternate loss functions in particular are an interesting area for further research. The CycleGAN architecture was built for the general problem on mapping images from one domain to another. However, for the specific problem of mapping images from one console generation to another, loss functions could be more precise. Others could research using the loss function to additionally model the console's graphical constraints, learning the exact color palette of each console generation.
 
-In the short term, given more time, we would have liked to have explored the possibility of enforcing some of the palette constraints (particularly for the SNES$\rightarrow$NES conversion) by modifying the output layer of the GAN so that, for example, each pixel in the output image was represented by a one-hot encoded palette entry. This would have resulted in an output layer of size $56\times256\times256\approx3.67\times10^6$ parameters, and would have ensured palette adherence, but may well have been significantly harder to train. This implementation would not have been feasible for the SNES, because it would have required approximately $2.147\times10^9$ parameters in the final layer.
+In the short term, given more time, we would have liked to have explored the possibility of enforcing some of the palette constraints (particularly for the SNES$\rightarrow$NES conversion) by modifying the output layer of the GAN so that, for example, each pixel in the output image was represented by a one-hot encoded palette entry. This would have resulted in an output layer of size $56\times256\times256\approx3.67\times10^6$ parameters, and would have ensured palette adherence, but may well have been significantly harder to train. This implementation would not have been feasible for the SNES, because it would have required approximately $2.147\times10^9$ parameters in the output layer.
 
 Another area that we were unable to investigate due to time constraints was the idea of sequentially training the network with successive datasets; starting from a small and clean set and increasing in noise and size. This has been shown in the literature to help improve learning and generalization in some cases.
 
@@ -468,7 +465,7 @@ Due to the lack of any readily available datasets for SNES and NES image, we had
 This task was made more difficult due to the number of sources that do not have clean images (for example, badly scaled, artifact-laden and/or watermarked images).
 Ultimately, a web scraper was written that allowed us to extract screenshots from four separate websites: \url{https://mobygames.com}, \url{https://www.video-games-museum.com}, \url{https://superfamicom.org} and \url{https://archive.org}.
 
-Each of these sites had a wide variety of images that required various degrees of preprocessing. As such, the program performed cropping and rescaling as necessary, taking care to preserve pixel detail as much as possible.
+Each of these sites had a wide variety of images that required varying degrees of preprocessing. As such, the program performed cropping and rescaling as necessary, taking care to preserve pixel detail as much as possible.
 Next, any images for each console that had more colors than allowed were run through an auto-clustering algorithm to reduce the number of colors below the allowable threshold for that console.
 Finally, each image was then classified into one of three ``quality bands'' depending on the amount of pre-processing required and the fidelity of the final image. The best quality band was reserved for images that required no pre-processing or none other than cropping. The next quality band contained images that  required only cropping, color-correction and/or scaling by a factor of exactly $2\times$, and the final quality band contained images that required scaling of $2.5\times$ after cropping. Any images that did not fit into these three categories were discarded.
 
@@ -478,7 +475,7 @@ After processing, the best quality band contained roughly $20,000$ images per co
 In order to make effective use of the dataset, we had to write a custom PyTorch loader in order to take advantage of the quality bands. This was integrated into the CycleGAN loader to allow seamless handling of the images within the constraints of the existing code.
 
 Additionally, this allowed us to implement additional on-the-fly image processing, and custom transforms such as pixel-doubling and color-clamping. Color clamping was used to ensure that an input image used the correct console palette by forcing the pixels of the image to conform the closest color in the appropriate console palette.
-Pixel doubling was a special case of the inbuilt zoom augmentation of CycleGAN that used nearest-neighbor scaling by a factor of $2x$ rather than the default bicubic, non-integer scaling. This was necessary to preserve the pixel and color integrity of the original image.
+Pixel doubling was a special case of the inbuilt zoom augmentation of CycleGAN that used nearest-neighbor scaling by a factor of $2\times$ rather than the default bicubic, non-integer scaling. This was necessary to preserve the pixel and color integrity of the original image.
 
 
 \newpage
@@ -515,8 +512,8 @@ Pixel doubling was a special case of the inbuilt zoom augmentation of CycleGAN t
       \STATE
       \FOR{each candidate image}
       \STATE $img\_rgb \leftarrow $ per pixel normalized RGB values
-      \STATE $min\_dists \leftarrow $ min distance between $img\_rgb$ and $console\_palette$
-      \STATE $max\_dists \leftarrow $ min distance between $img\_rgb$ and $max\_rgb$ values.
+      \STATE $min\_dists \leftarrow $ min distances between $img\_rgb$ and $console\_palette$
+      \STATE $max\_dists \leftarrow $ min distances between $img\_rgb$ and $max\_rgb$ values.
       \STATE $match\_pct \leftarrow \sum_{i=1..n}[ 1 $ if $(min\_dists_i < 1)$ else $0] / n$
       \STATE $bias\_factor \leftarrow max(0, min(1, m\_bias + (1 - m\_bias) \times match\_pct)$
 
