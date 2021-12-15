@@ -147,13 +147,11 @@ Additionally, an \textit{identity loss} is used to provide color/hue stability. 
 
 The CycleGAN framework allowed for significant configurability of hyperparameters, and we took full advantage of the flexibility provided. As such, for our first pass success measure, we selected for the hyperparameters that showed the smallest amount of loss for at least \textit{one} direction of the cycle. This gave us a shortlist of candidates to examine that we evaluated manually to determine which to investigate further. One interesting (but not entirely unexpected) observation we found was that the cycle performance was not even; a set of hyperparameters that performed well for the NES$\rightarrow$SNES conversion would not necessarily perform well for the SNES$\rightarrow$NES conversion, and vice versa.
 
-For each promising candidate set, we then ran a customized metric to evaluate the final images for their adherence to the hardware restrictions of each console. We produced several iterations of this metric, before finally settling on Algorithm \ref{alg:alg1}.
+For each promising candidate set, we then ran a customized metric to evaluate the final images for their adherence to the hardware restrictions of each console. We produced several iterations of this metric, before finally settling on Algorithm \ref{alg:alg1}. This was applied as a post-training evaluation metric and was not a learned parameter.
 
 This metric scores an image based on how closely the pixels match the target console palette modulated by the percentage of image pixels that match the target palette exactly. This modulation was necessary to compensate for the fact that the SNES palette has many more entries, and consequently, it was easier for the algorithm to score highly as any selected color was never too far away from a valid palette entry in RGB space. A perfect metric of either system would require accounting for hundreds of variables(pixel limit, per-pixel color palette limits, transparency limitations, max sprites per screen, etc), however this would be a task outside the scope of this paper and would heavily depend on domain knowledge, so we chose a metric that focuses on color palette, as it's a much more tractable task and is a metric that could be adapted to consoles other than just the NES/SNES.
 
 In practice, we found that using the stricter NES metric produced more meaningful results; that is, for the SNES$\rightarrow$NES conversion, we found that measuring the increase in value for this metric between the real SNES and fake NES image was a strong indicator of success. Conversely, for the NES$\rightarrow$SNES conversion, the decrease in value of this metric was a good indicator of success.
-
-\textcolor{darkgreen}{Note that this was applied as a post-training evaluation metric. An idea for future work would be to implement this metric as part of the loss function; unfortunately, time constraints prevented us from performing this investigation ourselves.}
 
 %\textit{\textcolor{blue}{What experiments were used?}}
 
@@ -364,8 +362,7 @@ The ``least squares'' loss function was used by the discriminator (as determined
 
 Although it is apparent that this leg of the conversion was not as successful as the reverse leg, it is still notable that the results show that some selective conversion has taken place. Notably, the results show that background areas tended to be lightened and blurred, bright spots tended to be blown out and made brighter, while areas of darker colors \--- particular those with black pixel outlines \--- tended to be left relatively untouched, implying that the network did at least extract some relevant feature information.
 
-\textcolor{red}{*** UNDERFITTING? NOT ENOUGH DATA?}
-\textcolor{darkgreen} {I think just focus on not enough data, nothing too crazy.}
+For two reasons we concluded that we underfit the model. First, the fake training images continued to improve as the training went one. At no point did the generated image's quality plateau. Second, we used smaller training sizes due to time constraints. Given more time we may have been able to use our entire dataset and fully train the model.
 
 %%%%%%%%% CONCLUSION
 \section{Conclusion And Future Work}
@@ -389,7 +386,7 @@ In the short term, given more time, we would have liked to have explored the pos
 Another area that we were unable to investigate due to time constraints was the idea of sequentially training the network with successive datasets; starting from a small and clean set and increasing in noise and size. This has been shown in the literature to help improve learning and generalization in some cases.
 
 %-------------------------------------------------------------------------
-\section{STILL TODO}
+% \section{STILL TODO}
 %
 %\textit{\textcolor{blue}{You are welcome to introduce additional sections or subsections, if required, to address the following questions in detail.}}
 %
@@ -403,17 +400,17 @@ Another area that we were unable to investigate due to time constraints was the 
 %
 %\textcolor{darkgreen}{Done. The paper is perfectly clear. I assume the reader knows about GANs but we explain CycleGANs and everything else is easy enough.}
 
-\textit{\textcolor{blue}{(5 points) Finally, points will be distributed based on your understanding of how your project relates to Deep Learning. Here are some questions to think about:}}
+% \textit{\textcolor{blue}{(5 points) Finally, points will be distributed based on your understanding of how your project relates to Deep Learning. Here are some questions to think about:}}
 
-\textcolor{darkgreen}{Just need to include the two architectures used in our main runs, give our total \# of parameters in their captions, \textcolor{red}{and give some brief analysis tying them into the experiments and this is done.}}
+% \textcolor{darkgreen}{Just need to include the two architectures used in our main runs, give our total \# of parameters in their captions, \textcolor{red}{and give some brief analysis tying them into the experiments and this is done.}}
 
 %\textit{\textcolor{blue}{What was the structure of your problem? How did the structure of your model reflect the structure of your problem?}}
 %
 %\textcolor{darkgreen}{I think this is easily covered in the CycleGAN section, talking about how the architecture addresses unpaired images.}
 
-\textit{\textcolor{blue}{What parts of your model had learned parameters (e.g., convolution layers) and what parts did not (e.g., post-processing classifier probabilities into decisions)? }}
+% \textit{\textcolor{blue}{What parts of your model had learned parameters (e.g., convolution layers) and what parts did not (e.g., post-processing classifier probabilities into decisions)? }}
 
-\textcolor{red}{Just briefly talk about how resnet9 and unet work and where their trainable parameters are. If we wanted to talk about stuff that doesn't have parameters, we could talk about the metric calculation or something?}
+% \textcolor{red}{Just briefly talk about how resnet9 and unet work and where their trainable parameters are. If we wanted to talk about stuff that doesn't have parameters, we could talk about the metric calculation or something?}
 
 %\textit{\textcolor{blue}{What representations of input and output did the neural network expect? How was the data pre/post-processed?}}
 %
