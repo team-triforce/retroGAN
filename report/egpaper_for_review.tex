@@ -1,5 +1,4 @@
 \documentclass[10pt,twocolumn,letterpaper]{article}
-
 \usepackage{cvpr}
 \usepackage{times}
 \usepackage{epsfig}
@@ -11,17 +10,26 @@
 \usepackage[boxed]{algorithm2e}
 \usepackage{algorithmic}
 \usepackage{color}
+\usepackage{relsize}
+\usepackage{setspace}
+\usepackage{caption}
+\usepackage{microtype} % makes more room
 \definecolor{darkred}{rgb}{0.8,0,0}
 \definecolor{darkgreen}{rgb}{0,0.6,0}
 \definecolor{darkblue}{rgb}{0,0,0.6}
 
+\usepackage[top=.8in, left=0.8in, bottom=1.1in, right=0.8in]{geometry} % slightly shrinking top margin
+\usepackage[skip=3pt, font=scriptsize]{caption} % makes font smaller for image captions
 % Include other packages here, before hyperref.
-
 % If you comment hyperref and then uncomment it, you should delete
 % egpaper.aux before re-running latex.  (Or just hit 'q' on the first latex
 % run, let it finish, and you should be clear).
 \usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}
-
+\setlength{\textfloatsep}{2.0pt plus 2.0pt minus 2.0pt}
+\renewcommand{\UrlFont}{\smaller}
+\captionsetup{belowskip=0pt}
+\setlength{\intextsep}{2.0pt plus 2.0pt minus 2.0pt}
+\setlength{\headsep}{0.2in}
 % TODO: Uncomment this line to enable the RULER, which I think we need for the final submission? Verify this.
 \cvprfinalcopy % *** Uncomment this line for the final submission
 
@@ -211,7 +219,7 @@ These results were generated using the hyperparameters shown in table \ref{tab:s
 
 \begin{figure}[H]
    \centering
-   \includegraphics[width=0.475\textwidth]{figures/graphs/train_graph_nes.png}
+   \includegraphics[width=0.475\textwidth, height=.3\textwidth]{figures/graphs/train_graph_nes.png}
    \caption{Training Graph with best SNES$\rightarrow$NES results}
    \label{fig:nesgraph}
 \end{figure}
@@ -311,7 +319,7 @@ These results were generated using the hyperparameters shown in table \ref{tab:s
 
 \begin{figure}[H]
    \centering
-   \includegraphics[width=0.475\textwidth]{figures/graphs/train_graph_snes.png}
+   \includegraphics[width=0.475\textwidth, height=.3\textwidth]{figures/graphs/train_graph_snes.png}
    \caption{Training Graph with best NES$\rightarrow$SNES results.}
    \label{fig:snesgraph}
 \end{figure}
@@ -322,7 +330,7 @@ The ``least squares'' loss function was used by the discriminator (as determined
 
 \begin{figure}[H]
    \centering
-   \includegraphics[width=0.475\textwidth]{figures/resnet_architecture.png}
+   \includegraphics[width=0.3\textwidth]{figures/resnet_architecture.png}
    \caption{Example ResNet Architecture}
    \label{fig:resnet}
 \end{figure}
